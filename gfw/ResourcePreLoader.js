@@ -51,11 +51,16 @@ LoadingState.prototype.Render = function()
 	var totalResourceCount = resourcePreLoader.intAllResourceCount + soundSystem.intAllResourceCount;
 	var nowCompleteResourceCount = resourcePreLoader.nowResourceLoadedCount + soundSystem.nowResourceLoadedCount;
 	
+	Context.fillStyle = "#ffffff";
+	Context.font = '28px Arial';
+	Context.textBaseline = "top";
+	
 	Context.fillText("Now Loading. . " + nowCompleteResourceCount + "/" + totalResourceCount, 350, 280);
 };
 
 LoadingState.prototype.Update = function ()
 {
+	
 	if(resourcePreLoader.isLoadComplete && soundSystem.isLoadComplete)
 	{
 		ChangeGameState( after_loading_state);

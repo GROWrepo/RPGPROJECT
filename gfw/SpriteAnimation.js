@@ -13,6 +13,8 @@ function SpriteAnimation( img, width, height, totalFrameCount, fps)
 	this.animationTimer = new Timer();
 	this.fps = fps;
 	
+	this.isStop = true;
+	
 	return this;
 }
 SpriteAnimation.prototype.ChangeImage = function(img, width, height, totalFrameCount, fps)
@@ -39,8 +41,11 @@ SpriteAnimation.prototype.Update = function ()
 {
 	var isLotate = false;
 	
+	if(!this.isStop){	
 	if(this.animationTimer.nowFrame > 1000/this.fps)
-	{
+	{	
+		debugSystem.Log("LOG",this.currentFrame);
+		
 		this.currentFrame++;
 		if(this.currentFrame >= this.totalFrameCount){
 			this.currentFrame = 0;
@@ -49,10 +54,19 @@ SpriteAnimation.prototype.Update = function ()
 			
 		this.animationTimer.Reset();
 	}
+	}
 	
 	return isLotate;
 };
-
+SpriteAnimation.prototype.StopPosition = function ()
+{
+	this.currentFrame = 0;
+	this.isStop = true;	
+};
+SpriteAnimation.prototype.GoPosition = function ()
+{
+	this.isStop = false;
+};
 SpriteAnimation.prototype.Translate = function (x, y)
 {
 	this.x += x;

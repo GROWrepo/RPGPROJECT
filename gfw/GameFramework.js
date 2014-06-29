@@ -36,7 +36,6 @@ function Update()
 	
 	//update
 	game_state.Update();
-	
 	//use debugMode
 	debugSystem.UseDebugMode();
 }
