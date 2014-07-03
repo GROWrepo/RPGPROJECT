@@ -1,15 +1,19 @@
 function PGPlayer(){
 
-	// 0 = stop 1 = walk 2 = dash 3 = jump
+	// 0 = stop 1 = walk 2 = dash 3 = jump 4 = dashJump 5 = attack
 	this.idle = 1;	
 	// 0 = left 1 = right
 	this.position = 1;
 	
+	this.isDashing = false;
+	this.isAttack = false;
 	this.isJump = false;
 	this.JumpHeight;
 	this.JumpSpeed = 11.0;
 	this.gravity = 6.0;
 	this.accelate;
+	this.isDash
+	= {left : false, right : false, left_toggle : false, right_toggle : false};
 	
 	this.preidle;
 	
@@ -18,20 +22,20 @@ function PGPlayer(){
 	,12,12);
 	
 	this.leftBound = 0;
-	this.rightBound = 800 - 31 ;
+	this.rightBound = 1280 - 59 ;
 	this.x = 0;
 	this.y = 720 - 40 - 146;
 	
 	this.life = 10;
 	
 	this.BodycollisionBox
-	={left: this.x,top : this.y + 42,right : this.x+56,bottom : this.y+146};
-	this.BodycollisionBox
-	={left: this.x,top : this.y + 42,right : this.x+56,bottom : this.y+146};
+	={left: this.x,top : this.y + 42,right : this.x+56,bottom : this.y+146 - 19};
+	this.LegcollisionBox
+	={left: this.x + 19 ,top : this.y + 146 - 19,right : this.x + 19 + 19,bottom : this.y+146};
 	
 	this.Invalid();
 	
-	this.interval = 1000;
+	this.interval = 500;
 	this.inputFrameSkipper = new FrameSkipper(this.interval);
 }
 
@@ -49,17 +53,29 @@ PGPlayer.prototype.Update = function(crashDirection){
 	var isLand = crashDirection.bottom;
 	
 //	debugSystem.Log("LOG",crashDirection);
-	var tic = this.inputFrameSkipper.isWork();
-	if(tic)
-		;
-		
+	if(this.inputFrameSkipper.isWork()){
+		this.isDash.left = false; this.isDash.right = false;
+		this.isDash.left_toggle = false; this.isDash.right_toggle = false;
+		}
+	
 	this.idle = 0;
 	
-	if(this.preidle != 4){
+	if(this.preidle != 4 && this.preidle != 2){
 	if(inputSystem.isKeyDown(37))//left
 	{
 		this.idle = 1;
-		if((this.preidle != this.idle || (this.preidle == 1 && this.position == 1)) && isLand){
+//		debugSystem.Log("LOG",this.preidle);
+		if(this.isDash.left){
+			this.idle = 2;
+			if(this.preidle != 2 && !this.isDashing){
+			this.isDashing = true;
+			this.sprplayer.ChangeImage(
+				resourcePreLoader.GetImage("img/l_dash.png")
+				,79,146
+				,16,16,true);
+			}
+		}
+		else if((this.preidle != this.idle || (this.preidle == 1 && this.position == 1)) && isLand){
 			this.sprplayer.ChangeImage(
 				resourcePreLoader.GetImage("img/l_walk.png")
 				,59,146
@@ -87,7 +103,17 @@ PGPlayer.prototype.Update = function(crashDirection){
 	if(inputSystem.isKeyDown(39))//right
 	{
 		this.idle = 1;
-		if((this.preidle != this.idle || (this.preidle == 1 && this.position == 0)) && isLand){
+		if(this.isDash.right){
+			this.idle = 2;
+			if(this.preidle != 2 && !this.isDashing){
+			this.isDashing = true;
+			this.sprplayer.ChangeImage(
+				resourcePreLoader.GetImage("img/r_dash.png")
+				,79,146
+				,16,16,false);
+			}
+		}
+		else if((this.preidle != this.idle || (this.preidle == 1 && this.position == 0)) && isLand){
 			this.sprplayer.ChangeImage(
 				resourcePreLoader.GetImage("img/r_walk.png")
 				,59,146
@@ -112,6 +138,44 @@ PGPlayer.prototype.Update = function(crashDirection){
 			
 		this.Invalid();	
 	}
+	}
+	if(this.isAttack)
+		this.idle = 5;
+	else if(this.isDashing){
+		this.idle = 2;
+			if(this.position == 1){//right
+		if(this.rightBound>this.x){
+			if(!crashDirection.right)
+				this.x += Speed;
+		}
+		else
+			this.x = this.rightBound;
+		}
+		else if(this.position == 0){
+		if(this.leftBound<this.x){
+			if(!crashDirection.left)
+				this.x -= Speed;
+		}
+		else
+			this.x = this.leftBound;
+		}
+		this.Invalid();
+	}
+		
+	if(inputSystem.isKeyDown(88) && !this.isAttack){//z : attack
+		this.isAttack = true;
+		if(this.preidle != 5){
+		if(this.position == 1)//right
+		this.sprplayer.ChangeImage(
+				resourcePreLoader.GetImage("img/r_attack.png")
+				,92,146
+				,6,6,false);
+		else if(this.position == 0)
+		this.sprplayer.ChangeImage(
+				resourcePreLoader.GetImage("img/l_attack.png")
+				,92,146
+				,6,6,true);
+		}
 	}
 	
 	if(isLand){
@@ -208,7 +272,33 @@ PGPlayer.prototype.Update = function(crashDirection){
 	}
 	
 	this.preidle = this.idle;
-	this.sprplayer.Update();
+	var isLotate = this.sprplayer.Update();
+	
+	if(isLotate && this.preidle == 5)//attack
+		this.isAttack = false;//reset	
+	else if(isLotate && this.isDashing){//dash
+		debugSystem.Log("LOG","stop");
+		this.isDashing = false;
+	}
+	
+	if(inputSystem.isKeyDown(37)){
+		this.isDash.left_toggle = true;
+	}else {
+		if(this.isDash.left_toggle){
+			this.isDash.left_toggle = false;
+			this.isDash.left = true;
+		}
+	}
+	if(inputSystem.isKeyDown(39)){
+		this.isDash.right_toggle = true;
+	}else{
+		if(this.isDash.right_toggle){
+			this.isDash.right_toggle = false;
+			this.isDash.right = true;
+//			debugSystem.Log("LOG",this.isDash.right);
+		}
+	}
+
 };
 PGPlayer.prototype.Invalid = function()
 {
@@ -218,21 +308,32 @@ PGPlayer.prototype.Invalid = function()
 	
 	switch(this.idle){
 		case 0:// stop
-		l = this.x + (56/4); t = this.y + 42; r = this.x + 56 - (56/4); b = this.y + 104 + 42 ;
+		l = this.x; t = this.y + 42; r = this.x + 56; b = this.y + 104 + 42 - 19;
+		this.LegcollisionBox
+		={left: this.x + 19 ,top : this.y + 146 - 19,right : this.x + 19 + 19,bottom : this.y+146};
 		break;
 		case 1:// walk
 		l = this.x; t = this.y + 45; r = this.x + 59; b = this.y + 101 + 45 ;
+		this.LegcollisionBox = null;
 		break;
 		case 2:// dash
+		l = this.x; t = this.y + 50; r = this.x + 79; b = this.y + 96 + 50 ;
+		this.LegcollisionBox = null;
 		break;
 		case 3:// jump
 		l = this.x; t = this.y; r = this.x + 78; b = this.y + 146 ;
+		this.LegcollisionBox = null;
 		break;
-		case 4:// dashjump
+		case 4:// dashJump
 		l = this.x + (93/4); t = this.y + 28; r = this.x + 93 - (93/4); b = this.y + 118 + 28 ;
+		this.LegcollisionBox = null;
+		break;
+		case 5: // attack
+		l = this.x; t = this.y + 44; r = this.x + 92; b = this.y + 102 + 44 ;
+		this.LegcollisionBox = null;
 		break;
 	};
 	
-	this.collisionBox
+	this.BodycollisionBox
 	={left: l,top : t,right : r,bottom : b};
 };

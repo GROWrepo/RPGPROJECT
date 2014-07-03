@@ -88,7 +88,9 @@ MapTile.prototype.CheckCollision = function(){
 
 	if(this.MapObject[i] != null){
 		var obj = this.MapObject[i];
-		var player = playGameState.GetPlayerCollsionBox();
+		var player = playGameState.GetPlayerBodyCollsionBox();
+		var player2 = playGameState.GetPlayerLegCollsionBox();
+		
 		var collisionBox
 			={left :obj.x ,top:obj.y ,right:obj.x + this.w ,bottom:obj.y + this.h };
 			
@@ -106,7 +108,7 @@ MapTile.prototype.CheckCollision = function(){
 					crashDirection.top = true;
 				}
 				//bottom crash
-				else if(collisionRect.bottom == player.bottom){
+				else if(collisionRect.bottom == player.bottom && player2 == null){
 					playGameState.NotificationCrash(false,-nInterH);
 //					player.y += nInterH;
 					crashDirection.bottom = true;
@@ -129,7 +131,23 @@ MapTile.prototype.CheckCollision = function(){
 			}
 			
 		}
-		
+		if(player2 != null){
+		var collisionRect = IntersectRect(player2,collisionBox);
+		if(collisionRect != null){
+			var nInterW = collisionRect.right - collisionRect.left;
+			var nInterH = collisionRect.bottom - collisionRect.top;
+			
+			if(nInterW > nInterH){
+				
+				//bottom crash
+				if(collisionRect.bottom == player2.bottom){
+					playGameState.NotificationCrash(false,-nInterH);
+//					player.y += nInterH;
+					crashDirection.bottom = true;
+				}		
+			}
+		}
+		}
 //		if(i == 544)
 //			debugSystem.Log("LOG", player.bottom + " " + collisionBox.top + " " + nInterH);
 /*

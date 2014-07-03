@@ -131,7 +131,14 @@ PlayGameState.prototype.NotificationCrash = function(direction, value)
 	}
 //	debugSystem.Log("LOG", "after"+this.player.y);
 };
-PlayGameState.prototype.GetPlayerCollsionBox = function()
+PlayGameState.prototype.GetPlayerBodyCollsionBox = function()
 {
-	return this.player.collisionBox;
+	return this.player.BodycollisionBox;
+};
+PlayGameState.prototype.GetPlayerLegCollsionBox = function()
+{
+	if(this.player.LegcollisionBox != null)
+		return this.player.LegcollisionBox;
+	else
+		return null;
 };
