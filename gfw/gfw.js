@@ -1,7 +1,7 @@
 function onGameInit()
 {
 	//title
-	document.title = "Antartic Adventure";
+	document.title = "RPGPROJECT";
 	
 	GAME_FPS = 30;
 	debugSystem.debugMode = true;

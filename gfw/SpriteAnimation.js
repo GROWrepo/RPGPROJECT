@@ -13,11 +13,11 @@ function SpriteAnimation( img, width, height, totalFrameCount, fps)
 	this.animationTimer = new Timer();
 	this.fps = fps;
 	
-	this.isStop = true;
-	
+	this.backImage = false;
+		
 	return this;
 }
-SpriteAnimation.prototype.ChangeImage = function(img, width, height, totalFrameCount, fps)
+SpriteAnimation.prototype.ChangeImage = function(img, width, height, totalFrameCount, fps, backImage)
 {
 	this.img = img;
 	
@@ -27,11 +27,43 @@ SpriteAnimation.prototype.ChangeImage = function(img, width, height, totalFrameC
 	this.totalFrameCount = totalFrameCount;
 	this.currentFrame = 0;
 	this.fps = fps;
+	
+
+	if(backImage)
+		this.backImage = true;
+	else
+		this.backImage = false;
+	
 };
+
+SpriteAnimation.prototype.ChangeDirection = function(img, width, height, totalFrameCount, fps, backImage)
+{
+	this.img = img;
+	
+	this.width = width;
+	this.height = height;
+	
+	this.totalFrameCount = totalFrameCount;
+	this.fps = fps;
+	
+
+	if(backImage)
+		this.backImage = true;
+	else
+		this.backImage = false;
+	
+};
+
 SpriteAnimation.prototype.Render = function (context)
 {
+	var _currentFrame = Math.floor(this.currentFrame);
+	
+	if(this.backImage){
+		_currentFrame = (this.totalFrameCount - 1) - _currentFrame;
+//		debugSystem.Log("LOG",_currentFrame);
+	}
 	context.drawImage(this.img,
-		this.width * Math.floor(this.currentFrame), 0,
+		this.width * _currentFrame, 0,
 		this.width, this.height,
 		this.x, this.y,
 		this.width, this.height);
@@ -41,11 +73,8 @@ SpriteAnimation.prototype.Update = function ()
 {
 	var isLotate = false;
 	
-	if(!this.isStop){	
 	if(this.animationTimer.nowFrame > 1000/this.fps)
 	{	
-		debugSystem.Log("LOG",this.currentFrame);
-		
 		this.currentFrame++;
 		if(this.currentFrame >= this.totalFrameCount){
 			this.currentFrame = 0;
@@ -54,18 +83,8 @@ SpriteAnimation.prototype.Update = function ()
 			
 		this.animationTimer.Reset();
 	}
-	}
 	
 	return isLotate;
-};
-SpriteAnimation.prototype.StopPosition = function ()
-{
-	this.currentFrame = 0;
-	this.isStop = true;	
-};
-SpriteAnimation.prototype.GoPosition = function ()
-{
-	this.isStop = false;
 };
 SpriteAnimation.prototype.Translate = function (x, y)
 {

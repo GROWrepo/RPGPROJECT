@@ -1,35 +1,40 @@
 var playGameState;
 function PlayGameState(stage)
 {
+	this.stage = 1;
+	
 	this.GAME_SPEED = 1.5;
 	
 	this.background = new PGbackground();
 	this.player = new PGPlayer();
+	this.Map = new MapTile(this.stage);
 
 	this.interval = 1000;
 	this.inputFrameSkipper = new FrameSkipper(this.interval);
-
 
 	this.isGameStop=false;
 	
 	this.waitInput= false;
 	
 	playGameState = this;
+	
+	this.Map.SetStage(this.stage);
+	this.Map.Load();
 }
 
 PlayGameState.prototype.Init = function()
 {
-//	soundSystem.PlayBackgroundMusic("sound/stage1_bgm.mp3");
+	soundSystem.PlayBackgroundMusic("sound/ElegantSummer.wav");
 };
 PlayGameState.prototype.Render = function()
 {
 	var theCanvas = document.getElementById("GameCanvas");
 	var Context = theCanvas.getContext("2d");
 	
-	
 	this.background.Render();
+	this.Map.Render();
 	this.player.Render();
-	
+
 	//text filed x : 0 ~ 800 / y : 0 ~ 130
 	Context.fillStyle = "#ffffff";
 	Context.font = '28px Arial';
@@ -49,8 +54,9 @@ PlayGameState.prototype.Update = function()
 	
 	if(!this.isGameStop){
 	
-		this.player.Update();
-
+		var crashDirection = this.Map.CheckCollision();
+		this.player.Update(crashDirection);
+		
 	}
 	
 	if(inputSystem.isKeyDown(13))//enter
@@ -111,4 +117,21 @@ PlayGameState.prototype.Notification = function(msg)
 		break;
 	};
 	*/
+};
+PlayGameState.prototype.NotificationCrash = function(direction, value)
+{
+//	debugSystem.Log("LOG", "before "+this.player.y);
+	if(direction){
+		debugSystem.Log("LOG","crash horizonal");
+		this.player.x += value;
+		this.player.Invalid();
+	}else{
+		this.player.y += value;
+		this.player.Invalid();
+	}
+//	debugSystem.Log("LOG", "after"+this.player.y);
+};
+PlayGameState.prototype.GetPlayerCollsionBox = function()
+{
+	return this.player.collisionBox;
 };
