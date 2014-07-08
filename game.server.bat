@@ -1,0 +1,1 @@
+nodemon "C:\Users\Jo\Documents\GitHub\RPGPROJECT\game.server.js"

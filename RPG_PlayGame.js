@@ -1,7 +1,7 @@
 var playGameState;
 function PlayGameState(stage)
 {
-	this.stage = 1;
+	this.stage = 2;
 	
 	this.GAME_SPEED = 1.5;
 	
@@ -20,6 +20,43 @@ function PlayGameState(stage)
 	
 	this.Map.SetStage(this.stage);
 	this.Map.Load();
+	
+	gfwSocket.On("control_in_game",function(msg)
+	{
+		switch(msg.key)
+		{
+			case "up": //38
+			inputSystem.setKeyDown(38,msg.value);
+			break;
+			case "left": //37
+			inputSystem.setKeyDown(37,msg.value);
+			break;
+			case "down":
+			inputSystem.setKeyDown(0,msg.value);
+			break;
+			case "right": //39
+			inputSystem.setKeyDown(39,msg.value);
+			break;
+			case "A": //88
+			inputSystem.setKeyDown(88,msg.value);
+			break;
+			case "B":
+			inputSystem.setKeyDown(0,msg.value);
+			break;
+			case "C":
+			inputSystem.setKeyDown(0,msg.value);
+			break;
+			case "D":
+			inputSystem.setKeyDown(0,msg.value);
+			break;
+			case "menu"://13
+			inputSystem.setKeyDown(13,msg.value);
+			break;
+			case "enter":
+			inputSystem.setKeyDown(0,msg.value);
+			break;
+		};
+	});
 }
 
 PlayGameState.prototype.Init = function()

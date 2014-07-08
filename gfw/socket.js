@@ -9,7 +9,7 @@ function gfwSocket( server_http)
 	this.http = server_http;
 	
 	LoadJavaScript(server_http + "/socket.io/socket.io.js");
-	setTimeout(function ()
+	setTimeout(function ()//소켓 스크립트 읽는다.
 	{
 		gfwSocket.socket = io.connect(server_http);
 	}, 2000);

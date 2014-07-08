@@ -26,6 +26,8 @@ Resource.prototype.AddImage = function(){
 	resourcePreLoader.AddImage("img/r_dash.png");
 	resourcePreLoader.AddImage("img/l_attack.png");// 92 102 6
 	resourcePreLoader.AddImage("img/r_attack.png");
+	
+	
 };
 
 Resource.prototype.AddSound = function(){

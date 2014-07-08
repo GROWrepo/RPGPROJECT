@@ -20,6 +20,9 @@ InputSystem.prototype.isKeyDown = function(keyCode)
 	else
 		return false;
 };
+InputSystem.prototype.setKeyDown = function(keyCode,value){
+	this.isKeyPressed[keyCode] = value;
+};
 //mouse
 InputSystem.prototype.getMousePositionX = function()
 {
