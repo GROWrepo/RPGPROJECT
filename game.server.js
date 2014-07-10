@@ -51,12 +51,16 @@ io.sockets.on("connection",function(socket)
 		});	
 			
 		player.isWantGame = true;
+		player.key = data;
+		
+		var check = true;
 		for(var i = 0; i < arrPlayers.length; i++)
 		{
 			if(arrPlayers[i].id == player.id)
 				continue;
-			if(arrPlayers[i].isWantGame == true)
+			if(arrPlayers[i].isWantGame == true && arrPlayers[i].key == player.key)
 			{
+				check = false;
 				console.log("[Start Game]");
 				player.isWantGame = false;
 				arrPlayers[i].isWantGame = false;
@@ -68,21 +72,32 @@ io.sockets.on("connection",function(socket)
 				io.sockets.sockets[arrPlayers[i].id].emit("start_game","joystick");
 			}
 		}
+		if(check)
+			io.sockets.sockets[player.id].emit("start_game","fail");
+		
 	});
-	socket.on("control_in_game",function (msg,data)
+	socket.on("control_in_game",function (value)
 	{
 		var player;
 		socket.get("user_data",function(error,user_data)
 		{
 			player = user_data;
 		});
-		io.sockets.sockets[player.rival_id].emit("control_in_game",data);
+		console.log(value);
+		io.sockets.sockets[player.rival_id].emit("control_in_game",value);
 	});
+/*	
+	socket.on("debug",function (value)
+	{	
+		console.log(value);
+	});
+*/	
 });
 
 function Player(id)
 {
 	this.id = id;
+	this.key = 0;
 	this.isWantGame = false;
 	this.rival_id = 0;
 }

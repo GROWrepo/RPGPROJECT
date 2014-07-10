@@ -1,7 +1,7 @@
 var playGameState;
 function PlayGameState(stage)
 {
-	this.stage = 2;
+	this.stage = 1;
 	
 	this.GAME_SPEED = 1.5;
 	
@@ -26,7 +26,7 @@ function PlayGameState(stage)
 		switch(msg.key)
 		{
 			case "up": //38
-			inputSystem.setKeyDown(38,msg.value);
+			inputSystem.setKeyDown(0,msg.value);
 			break;
 			case "left": //37
 			inputSystem.setKeyDown(37,msg.value);
@@ -44,7 +44,7 @@ function PlayGameState(stage)
 			inputSystem.setKeyDown(0,msg.value);
 			break;
 			case "C":
-			inputSystem.setKeyDown(0,msg.value);
+			inputSystem.setKeyDown(38,msg.value);
 			break;
 			case "D":
 			inputSystem.setKeyDown(0,msg.value);

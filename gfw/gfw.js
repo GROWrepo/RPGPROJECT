@@ -11,7 +11,7 @@ function onGameInit()
 	R.AddImage();
 	R.AddSound();
 	//socket.io
-	new gfwSocket("http://127.0.0.1:9892");
+	new gfwSocket("http://121.152.186.155:9892");
 	//121.152.186.155
 	//init state setting
 //	after_loading_state = new TitleState();
