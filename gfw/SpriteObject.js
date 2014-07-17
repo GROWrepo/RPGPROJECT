@@ -30,7 +30,16 @@ SpriteObject.prototype.Next = function(index)
 	
 	//if(this.currentCount>this.totalFrameCount)
 	//	this.currentCount = 0;
-	this.currentCount = index;
+	if(index == undefined)
+	{
+		this.currentCount++;
+		if(this.currentCount>this.totalFrameCount)
+			this.currentCount = 0;
+	}
+	else
+	{
+		this.currentCount = index;
+	}
 };
 SpriteObject.prototype.GetTotalFrameCount = function()
 {

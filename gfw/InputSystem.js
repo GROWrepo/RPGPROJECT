@@ -33,6 +33,17 @@ InputSystem.prototype.getMousePositionY = function()
 	return this.mouseY;
 };
 
+InputSystem.prototype.checkKeyDown = function(keyCode)
+{
+	if(this.isKeyPressed[keyCode] == true)
+	{
+		this.isKeyPressed[keyCode] = false;
+		return true;
+	}
+	else
+		return false;
+};
+
 function onMouseMove(e)
 {
 	var theCanvas = document.getElementById("GameCanvas");

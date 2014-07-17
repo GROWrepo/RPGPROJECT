@@ -36,3 +36,26 @@ function IntersectRect(pRect1, pRect2){
 		
 	return null;
 }
+
+function ISIntersectRect(pRect1, pRect2){
+	var bVertical = false;
+	var bHorizontal = false;
+	if(pRect1.left < pRect2.right && pRect1.right > pRect2.left)
+		bHorizontal = true;
+	if(pRect1.top < pRect2.bottom && pRect1.bottom >= pRect2.top)
+		bVertical = true;
+		
+	if(bVertical && bHorizontal)
+		return true;
+		
+	return false;	
+}
+
+function DrawBorder(Context,color,size,x,y,width,height)
+{
+//	Context.save();
+	Context.strokeStyle = color;
+	Context.lineWidth = size;
+	Context.strokeRect(x+size,y+size,width-size*2,height-size*2);
+//	Context.restore();
+}

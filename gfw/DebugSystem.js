@@ -2,6 +2,7 @@ function DebugSystem()
 {
 	this.debugMode = true;
 	this.useAlert = false;
+	this.first = true;
 	return this;
 }
 
@@ -15,6 +16,13 @@ DebugSystem.prototype.Log = function (type, msg)
 	
 	switch(type)
 	{
+		case "ONELOG":
+		if(this.first)
+		{
+			this.first = false;
+			console.log(msg);
+		}
+		break;
 		case "LOG":
 		console.log(msg);
 		break;
@@ -28,7 +36,6 @@ DebugSystem.prototype.Log = function (type, msg)
 		break;
 	};
 };
-
 DebugSystem.prototype.UseDebugMode = function ()
 {
 	if(inputSystem.isKeyDown(27) && inputSystem.isKeyDown(32))

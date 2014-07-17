@@ -1,4 +1,6 @@
 var playGameState;
+var Status;
+var Item;
 function PlayGameState(stage)
 {
 	this.stage = 1;
@@ -8,19 +10,20 @@ function PlayGameState(stage)
 	this.background = new PGbackground();
 	this.player = new PGPlayer();
 	this.Map = new MapTile(this.stage);
-
-	this.interval = 1000;
-	this.inputFrameSkipper = new FrameSkipper(this.interval);
-
-	this.isGameStop=false;
+	this.Object = new PGObject();
+	this.Menu = new PGMenu();
+	Item = new PGItem();
+	Status = new PGStatus(1, 100);
 	
-	this.waitInput= false;
+	this.isGameStop = false;
+	this.InMenuState = false;
+	this.time = new Timer();
 	
 	playGameState = this;
 	
 	this.Map.SetStage(this.stage);
-	this.Map.Load();
-	
+
+/*	
 	gfwSocket.On("control_in_game",function(msg)
 	{
 		switch(msg.key)
@@ -57,6 +60,8 @@ function PlayGameState(stage)
 			break;
 		};
 	});
+*/	
+	
 }
 
 PlayGameState.prototype.Init = function()
@@ -68,70 +73,65 @@ PlayGameState.prototype.Render = function()
 	var theCanvas = document.getElementById("GameCanvas");
 	var Context = theCanvas.getContext("2d");
 	
-	this.background.Render();
-	this.Map.Render();
-	this.player.Render();
-
+	if(!this.InMenuState)
+	{
+		this.background.Render();
+		this.Map.Render();
+		this.player.Render();
+	}
+	Status.Render();
+	
 	//text filed x : 0 ~ 800 / y : 0 ~ 130
 	Context.fillStyle = "#ffffff";
 	Context.font = '28px Arial';
 	Context.textBaseline = "top";
 
 	if(this.isGameStop){
-		Context.save();
-		Context.fillStyle = "#000000";
-		Context.fillRect(350,300,120,30);//rect
-		Context.restore();
-		Context.fillText("PAUSE",365,300);
+		this.Menu.Render(Context);
 	}
 };
 PlayGameState.prototype.Update = function()
 {
-	var tic = this.inputFrameSkipper.isWork();
-	
-	if(!this.isGameStop){
-	
+	if(!this.isGameStop)
+	{
 		var crashDirection = this.Map.CheckCollision();
 		this.player.Update(crashDirection);
-		
+		this.Object.Update();
+	}
+	else // menu
+	{
+		this.Menu.Update();
 	}
 	
-	if(inputSystem.isKeyDown(13))//enter
+	if(inputSystem.checkKeyDown(13))//enter
 	{
 		debugSystem.Log("LOG","ENTER");
-		if(!this.waitInput){
-//		soundSystem.PlaySound("sound/game_effect_pause.wav");
-			this.isGameStop = !this.isGameStop;
-			this.inputFrameSkipper.ReSet();//0
-			this.waitInput = true;
-		}
-	}
-	
-	if(this.waitInput && tic){
-		this.waitInput= false;
-	}
-	
+		this.isGameStop =true;
+	}	
 	
 };
-PlayGameState.prototype.Notification = function(msg)
+PlayGameState.prototype.Notification = function(msg,value)
 {
-	/*
+	
 	switch(msg)
 	{
-		case "CHANGE_MAP_A":
-			this.background.ChangeBG(0);
+//		case "GET_ONENTER":
+//			return this.player.onEnter;
+//		break;
+		case "GOGAME":
+			this.isGameStop = false;
 		break;
-		case "CHANGE_MAP_B":
-			this.background.ChangeBG(1);
+		case "GET_STAGE":
+			return this.stage;
+		case "CHANGE_MAP":
+			this.stage = value.stage;
+			this.Object.reset();
+			var backgroundImg = this.Map.SetStage(this.stage);
+			this.background.ChangeBG(backgroundImg);
+			this.player.setPosition(value.x,value.y);// init player
 		break;
-		case "CHANGE_MAP_C":
-			this.background.ChangeBG(2);
-		break;
-		case "CHANGE_MAP_D":
-			this.background.ChangeBG(3);
-		break;
-		case "GET_SCORE":
-			this.Score+= 50;
+		case "MAKEGATE":
+			this.Object.makeObject("gate",value);
 		break;
 		case "TIME_OVER":
 			soundSystem.StopBackgroundMusic();
@@ -141,41 +141,37 @@ PlayGameState.prototype.Notification = function(msg)
 		case "CRASH_L_ENEMY":
 			this.player.Crash(1);
 		break;
-		case "CRASH_R_ENEMY":
-			this.player.Crash(0);
-		break;
-		case "CRASH_BIGHOLE":
-			this.player.Down();
-		break;
 		case "GOAL":
 			soundSystem.StopBackgroundMusic();
 			soundSystem.PlaySound("sound/game_bgm_win.ogg");
 			ChangeGameState(new TransitionFadeOut(this,new CreditState,1.6));
 		break;
 	};
-	*/
+	
 };
 PlayGameState.prototype.NotificationCrash = function(direction, value)
 {
 //	debugSystem.Log("LOG", "before "+this.player.y);
 	if(direction){
-		debugSystem.Log("LOG","crash horizonal");
 		this.player.x += value;
 		this.player.Invalid();
 	}else{
+		if(value != 0)
+			debugSystem.Log("LOG","crash vertical : " + value);
 		this.player.y += value;
 		this.player.Invalid();
 	}
 //	debugSystem.Log("LOG", "after"+this.player.y);
 };
-PlayGameState.prototype.GetPlayerBodyCollsionBox = function()
+PlayGameState.prototype.GetPlayerUpCollsionBox = function()
 {
-	return this.player.BodycollisionBox;
+	return this.player.UpCollisitionBox;
 };
-PlayGameState.prototype.GetPlayerLegCollsionBox = function()
+PlayGameState.prototype.GetPlayerDownCollsionBox = function()
 {
-	if(this.player.LegcollisionBox != null)
-		return this.player.LegcollisionBox;
-	else
-		return null;
+	return this.player.DownCollisitionBox;
+};
+PlayGameState.prototype.GetPlayerAttackCollsionBox = function()
+{
+	return this.player.AttackCollisitionBox;
 };

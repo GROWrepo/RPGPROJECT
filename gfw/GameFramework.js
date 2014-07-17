@@ -47,7 +47,7 @@ function Render()
 	var Context = theCanvas.getContext("2d");
 	
 	Context.fillStyle = "#000000";
-	Context.fillRect(0,0,800,600);
+	Context.fillRect(0,0,theCanvas.width,theCanvas.height);
 
 	game_state.Render();
 	
