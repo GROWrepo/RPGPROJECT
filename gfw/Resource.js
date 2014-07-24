@@ -92,6 +92,13 @@ Resource.prototype.AddImage = function(){
 	resourcePreLoader.AddImage("img/aki15009.png");resourcePreLoader.AddImage("img/aki15021.png");
 	resourcePreLoader.AddImage("img/aki15010.png");resourcePreLoader.AddImage("img/aki15022.png");
 	resourcePreLoader.AddImage("img/aki15011.png");resourcePreLoader.AddImage("img/aki15023.png");
+	
+	//mon
+	resourcePreLoader.AddImage("img/sk01000.png");resourcePreLoader.AddImage("img/sk01001.png");
+	resourcePreLoader.AddImage("img/sk01002.png");resourcePreLoader.AddImage("img/sk01003.png");
+	
+	resourcePreLoader.AddImage("img/sk26004.png");resourcePreLoader.AddImage("img/sk26001.png");
+	resourcePreLoader.AddImage("img/sk26002.png");resourcePreLoader.AddImage("img/sk26003.png");
 };
 
 Resource.prototype.AddSound = function(){

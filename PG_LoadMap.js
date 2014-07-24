@@ -188,3 +188,49 @@ MapTile.prototype.CheckCollision = function(){
 	// 0 = not crash
 	return crashDirection;
 };
+MapTile.prototype.Mon_CheckCollision = function(){
+	
+	var crashDirection
+		={left : false, top : false, right : false, bottom : false};
+		
+	for(var i = 0; i < this.MapObject.length ; i ++){
+
+	if(this.MapObject[i] != null){
+		var obj = this.MapObject[i];
+		var collisionBox = this.MapObject[i].collisionBox;
+		var monster = playGameState.GetMonsterBox();
+		for(var j = 0; j < monster.length; j++){
+			var collisionRect = IntersectRect(monster[j],collisionBox);
+			if(collisionRect != null){
+			var nInterW = collisionRect.right - collisionRect.left;
+			var nInterH = collisionRect.bottom - collisionRect.top;
+			if(nInterW > nInterH){
+				//top crash
+				if(collisionRect.top == monster[j].top){
+					playGameState.mon_NotificationCrash(false,nInterH);
+					crashDirection.top = true;
+				}	
+			}
+			else{
+				//left crash
+				if(collisionRect.left == monster[j].left){
+					playGameState.mon_NotificationCrash(true,nInterW);		debugSystem.Log("LOG","crash horizonal Up");
+					crashDirection.left = true;
+				}
+				//right crash
+				else if(collisionRect.right == monster[j].right){
+					playGameState.mon_NotificationCrash(true,-nInterW);		debugSystem.Log("LOG","crash horizonal Up");
+					crashDirection.right = true;
+				}			
+			}
+			}
+		}
+		
+		
+		
+		
+	}
+	}
+	// 0 = not crash
+	return crashDirection;
+};

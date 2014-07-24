@@ -17,7 +17,7 @@ function PGPlayer(){
 	
 	this.preidle;
 	
-	this.sprplayer = new GraphicObjectAnimation(0, 12, 12);
+	this.sprplayer = new GraphicObjectAnimation("aki",0, 12, 12);
 	
 	this.leftBound = 0;
 	this.rightBound = 1280 - 59 ;

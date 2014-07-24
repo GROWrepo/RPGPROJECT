@@ -9,6 +9,7 @@ function PlayGameState(stage)
 	
 	this.background = new PGbackground();
 	this.player = new PGPlayer();
+	this.monster = new PGMonster();
 	this.Map = new MapTile(this.stage);
 	this.Object = new PGObject();
 	this.Menu = new PGMenu();
@@ -78,6 +79,7 @@ PlayGameState.prototype.Render = function()
 		this.background.Render();
 		this.Map.Render();
 		this.player.Render();
+		this.monster.Render();
 	}
 	Status.Render();
 	
@@ -95,7 +97,9 @@ PlayGameState.prototype.Update = function()
 	if(!this.isGameStop)
 	{
 		var crashDirection = this.Map.CheckCollision();
+		var mon_crashDirection = this.Map.Mon_CheckCollision();
 		this.player.Update(crashDirection);
+		this.monster.Update(mon_crashDirection);
 		this.Object.Update();
 	}
 	else // menu
@@ -174,4 +178,22 @@ PlayGameState.prototype.GetPlayerDownCollsionBox = function()
 PlayGameState.prototype.GetPlayerAttackCollsionBox = function()
 {
 	return this.player.AttackCollisitionBox;
+};
+PlayGameState.prototype.GetMonsterBox =function()
+{
+	return this.monster.Box;
+};
+PlayGameState.prototype.GetMonsterAttackBox =function()
+{
+	return this.monster.AttackBox;
+};
+PlayGameState.prototype.mon_NotificationCrash = function(direction, value)
+{
+	if(direction){
+		this.monster.x += value;
+		this.monster.Invalid();
+	}else{
+		this.monster.y += value;
+		this.monster.Invalid();
+	}
 };
