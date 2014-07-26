@@ -3,6 +3,7 @@ function GraphicObjectAnimation(name, type, totalFrameCount, fps)
 	this.x = 0;
 	this.y = 0;
 	this.img;
+	this.name=name;
 	this.type = type;
 	this.forward = true;
 	
@@ -11,7 +12,8 @@ function GraphicObjectAnimation(name, type, totalFrameCount, fps)
 	
 	this.animationTimer = new Timer();
 	this.fps = fps;
-		this.name=name;
+
+	
 	this.Init();
 	return this;
 }
@@ -20,7 +22,7 @@ GraphicObjectAnimation.prototype.Init = function(){
 	
 	this.img = null;
 	this.img = new Array();
-
+	
 	var str = this.name;
 	switch(this.type){
 		case 0 : // stand
@@ -86,7 +88,7 @@ GraphicObjectAnimation.prototype.ChangeFrame = function(){
 		this.currentFrame = ((this.totalFrameCount - 4) - this.currentFrame);
 };
 GraphicObjectAnimation.prototype.ChangeImage = function( type, totalFrameCount, fps)
-{
+{	
 	this.type = type;
 	this.totalFrameCount = totalFrameCount;
 	this.currentFrame = 0;
@@ -148,19 +150,4 @@ GraphicObjectAnimation.prototype.SetPosition = function (x, y)
 {
 	this.x = x;
 	this.y = y;
-};
-GraphicObjectAnimation.prototype.Mon_ChangeImage = function( type, totalFrameCount, fps)
-{
-	this.type = type;
-	this.totalFrameCount = totalFrameCount;
-	this.fps = fps;
-	
-	this.Init();
-};
-GraphicObjectAnimation.prototype.Mon_ChangeForward = function(forward)
-{
-	if(forward == 1)
-		this.forward = true;
-	else
-		this.forward = false;
 };

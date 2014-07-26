@@ -86,6 +86,8 @@ PGStatus.prototype.GetExp = function(value){
 		this.Exp = 0;
 		this.NextExp += this.Level*300;
 	}
+	
+	playGameState.StateLine.PushLine("player get Exp : "+value);
 };
 PGStatus.prototype.Healing = function(value){
 	
@@ -94,17 +96,22 @@ PGStatus.prototype.Healing = function(value){
 		this.HP = this.MaxHP;
 };
 PGStatus.prototype.Attacking = function(){
-	return (this.Attack + this.Ability.str*0.1);
+	return (this.Ability.Attack + this.Ability.str*0.1);
 };
 PGStatus.prototype.Attacked = function(value){
 	
 	var avoid = 50*(this.Ability.dex*0.01)/100;
 	
 	if( RandomNextInt(0,100) < avoid )//avoid succ
-		;
+		playGameState.StateLine.PushLine("player avoid");
 	else
 	{
-		this.HP -= (value - this.Defense);
+		console.log("player is attaked "+(value-this.Ability.Defense));
+		if(value - this.Ability.Defense > 0)
+		{
+			this.HP -= (value - this.Ability.Defense);
+			playGameState.StateLine.PushLine("player attacked : "+(value - this.Ability.Defense));
+		}
 		if(this.HP < 0)//dead
 			;	
 	}
@@ -167,13 +174,9 @@ PGStatus.prototype.Render = function(){
 	Context.textBaseline = "top";
 	Context.font = '20px Arial';
 	
-	Context.fillText("HP : " + this.HP+" / "+this.MaxHP, 200 ,720 + 10);
-	Context.fillText("EXP : " + this.Exp+" / "+this.NextExp, 200 ,720 + 40);
-	
-	Context.fillText("LEV : " + this.Level, 400 ,720 + 10);
-	Context.fillText("ATK : " + this.Ability.Attack, 400 ,720 + 40);
-	Context.fillText("GOLD : " + this.gold, 600 ,720 + 10);
-	
+	Context.fillText("LEV : " + this.Level, 180 ,720 + 10);
+	Context.fillText("HP : " + this.HP+" / "+this.MaxHP, 300 ,720 + 10);
+	Context.fillText("EXP : " + this.Exp+" / "+this.NextExp, 500 ,720 + 10);
 };
 
 function Inventory(){

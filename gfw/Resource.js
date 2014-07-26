@@ -6,8 +6,12 @@ Resource.prototype.AddImage = function(){
 	//icon img
 	resourcePreLoader.AddImage("img/point.png");
 	resourcePreLoader.AddImage("img/hp.png");
-	resourcePreLoader.AddImage("img/fs_akiha.png");
 	resourcePreLoader.AddImage("img/Logo.png");
+	resourcePreLoader.AddImage("img/fs_akiha.png");	
+	
+	//chatting img
+	resourcePreLoader.AddImage("img/chating_box.png");
+	resourcePreLoader.AddImage("img/f_akiha.png");
 	
 	//item img
 	resourcePreLoader.AddImage("img/item.png");
@@ -93,7 +97,9 @@ Resource.prototype.AddImage = function(){
 	resourcePreLoader.AddImage("img/aki15010.png");resourcePreLoader.AddImage("img/aki15022.png");
 	resourcePreLoader.AddImage("img/aki15011.png");resourcePreLoader.AddImage("img/aki15023.png");
 	
-	//mon
+	//monster
+	resourcePreLoader.AddImage("img/sk00000.png");
+	
 	resourcePreLoader.AddImage("img/sk01000.png");resourcePreLoader.AddImage("img/sk01001.png");
 	resourcePreLoader.AddImage("img/sk01002.png");resourcePreLoader.AddImage("img/sk01003.png");
 	

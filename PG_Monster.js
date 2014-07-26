@@ -1,186 +1,328 @@
 function PGMonster(){
-	// 0 = stop 1 = walk 2 = attack
-	this.idle = 1;	
-	// 0 = left 1 = right
-	this.position = 1;
-	
-	this.leftBound = 0;
-	this.rightBound = 1280 - 56 ;
-	
-	this.sprmonster= new GraphicObjectAnimation("sk",1, 4, 4);
-	this.life = 20;
-	this.Attackdamage = 1;
-	this.Box = new Array();
-	this.AttackBox = new Array();
-	this.AttackBox[0]= {left: 0, top:0, right: 0, bottom:0, x : 0 ,y:0,w:0,h:0};
-	this.AttackBox[1]={left: 0, top:0, right: 0, bottom:0, x : 0 ,y:0,w:0,h:0};
 
+	this.monsterArray = new Array();
 	
-	this.array  ={left: 0, top:0, right: 0, bottom:0};
-	this.CollisitionBox_01 = new Array();
-	this.CollisitionBox_02 = new Array();
-	this.makeCollisition();
-	this.leftBound = 0;
-	this.rightBound = 1280 - 140 ;
-	this.x = 800;
-	this.y = 720-256-14;
-	this.isAttack=false;
-	
-	this.interval = 1300;
-	this.inputFrameSkipper = new FrameSkipper(this.interval);
+	this.GetMonster();
 }
-
-
-PGMonster.prototype.makeCollisition = function(){
-	this.CollisitionBox_01.push(Mon_makeBox("90,132,85,93,/"));
-	this.CollisitionBox_01.push(Mon_makeBox("90,132,87,93,/"));
-	this.CollisitionBox_01.push(Mon_makeBox("90,132,86,93,/"));
-	this.CollisitionBox_01.push(Mon_makeBox("90,132,85,93,/"));
-
-	this.CollisitionBox_02.push(Mon_makeBox("90,134,75,93,/165,150,25,60,/"));
-	this.CollisitionBox_02.push(Mon_makeBox("90,134,75,93,/165,150,25,60,/"));
-	this.CollisitionBox_02.push(Mon_makeBox("90,134,75,93,/165,150,25,60,/"));
-	this.CollisitionBox_02.push(Mon_makeBox("90,134,75,93,/165,150,25,60,/"));	
-	
+PGMonster.prototype.GetMonster = function(){
+	//test
+	this.monsterArray.push(new monster("sk",900,720-256-14));
 };
-function Mon_makeBox(data){
-	
-	var Rect = new Array();
-	var AttackRect = new Array();
-	var strArray = data.split("/");
-	var preStr = strArray[0].split(",");
-	for(var i = 0 ; i < preStr.length-1; i++)
-			if(i%4 == 0){
-				
-				Rect.push({left:0,top:0,right:0,bottom:0,x : parseInt(preStr[i+0]) , y : parseInt(preStr[i+1]) , w : parseInt(preStr[i+2]) , h : parseInt(preStr[i+3]) });
-			}
-			
-		preStr = strArray[1].split(",");
-	for(var i = 0 ; i < preStr.length-1; i++)
-			if(i%4 == 0){
-				
-				AttackRect.push({left:0,top:0,right:0,bottom:0,x : parseInt(preStr[i+0]) , y : parseInt(preStr[i+1]) , w : parseInt(preStr[i+2]) , h : parseInt(preStr[i+3]) });
-			}		
-				
-	return {box : Rect , attack : AttackRect}; 
-}
+PGMonster.prototype.DelMonster = function(index){
+	this.monsterArray.splice(index,1);
+};
 PGMonster.prototype.Render = function(){
 	var theCanvas = document.getElementById("GameCanvas");
 	var Context = theCanvas.getContext("2d");
-	this.sprmonster.Render(Context);
-};
-PGMonster.prototype.Update = function(mon_crashDirection){
-	var Speed = 2;
-	var isLand = mon_crashDirection.bottom;
-	if(this.idle==1 && this.position== 1 )
-	{
-		this.sprmonster.Mon_ChangeForward(this.position);
-		this.sprmonster.Mon_ChangeImage(1,4,4);
-		if(mon_crashDirection.right)
-		{
-			this.position=0;
-			this.sprmonster.Mon_ChangeForward(this.position);
-		}
-		if(this.rightBound>this.x)
-				this.x += Speed;
-		else
-		{
-			this.position=0;
-			this.sprmonster.Mon_ChangeForward(this.position);
-			this.x = this.rightBound;
-		}
-		this.Invalid(1);
-	}
-	else if(this.idle==1 && this.position ==0)
-	{
-		
-		this.sprmonster.Mon_ChangeForward(this.position);
-		this.sprmonster.Mon_ChangeImage(1,4,4);
-		if(mon_crashDirection.left)
-		{	
-			this.position=1;
-			this.sprmonster.Mon_ChangeForward(this.position);
-		}
-		if(this.leftBound<this.x)
-			this.x -= Speed;
-		else
-		{
-			this.position=1;
-			this.sprmonster.Mon_ChangeForward(this.position);
-			this.x = this.leftBound;
-		}
-		this.Invalid(1);
-	}
 	
+	for(var i = 0 ; i < this.monsterArray.length ; i++)
+		this.monsterArray[i].Render(Context);
+	
+};
+PGMonster.prototype.Update = function(){
+	for(var i = 0 ; i < this.monsterArray.length ; i++)
+		this.monsterArray[i].Update();	
+};
 
+function monster(name, x, y){
 	
-	//Attack's array
-	var player_down= playGameState.GetPlayerDownCollsionBox();
-	var player_up =playGameState.GetPlayerUpCollsionBox();
-	if(IntersectRect(this.array,player_down[0]))
-	{
-		if(BoolIntersectRect(this.array,player_down[0]).left)
-		{
-			this.position=0;
+	this.name = name;
+	
+	// stop(search) = 0 / moving = 1 / attacking = 5 / backmoving = 4
+	this.idle = 0;
+	// 0 = left 1 = right
+	this.position = 0;
+	
+	this.totallife;
+	this.life;
+	this.Damage;
+	this.exp;
+
+	this.alpha = 1.0;
+	this.dead = false;
+	this.sprmonster;
+	this.sea;
+	
+	this.UpCollisitionBox = new Array();//	={left: this.x,top : this.y + 42,right : this.x+56,bottom : this.y+146 - 19};
+	this.DownCollisitionBox = new Array();
+	this.AttackCollisitionBox = new Array();
+	this.SeaCollisitionBox;
+	
+	this.CollisitionBox_00 = new Array(); // wait
+	this.CollisitionBox_26 = new Array(); // walk
+	this.CollisitionBox_01 = new Array(); // attack
+	
+	this.x = x;
+	this.y = y;
+	this.f_x = x;
+	this.f_y = y;
+	this.leftBound = 0;
+	this.rightBound = 1280 - 140 ;
+
+	this.inputFrameSkipper = new FrameSkipper(500);
+	this.prograssbar;
+	this.prograssbarOn = 0 ;
+	this.count = 0;
+	
+	this.damaging = false;
+	this.damaged = false;
+	this.inputFrameSkipper_wait;
+	this.Icon = new icon();
+	
+	this.Init();
+}
+monster.prototype.Init = function(){
+	switch(this.name){
+		case "sk":
+			this.totallife = 100;
+			this.life = 100;
+			this.Damage = 12;
+			this.exp = 20;
+			this.sea = 300;
+			this.sprmonster= new GraphicObjectAnimation("sk", 0, 1, 1);
+					
+			this.inputFrameSkipper_wait = new FrameSkipper(5000);
+			this.inputFrameSkipper_wait.Set();
+			this.prograssbar = new FrameSkipper(800);
+			this.prograssbar.Set();
 			
-		}
-		if(BoolIntersectRect(this.array,player_down[0]).right)
-		{
-			this.position=1;
-		}
-	}
-	//Attack
-	if(!IntersectRect(this.Box[0],player_down[0]))
-	{
-		this.idle=1;
-	}
-	
-	if(IntersectRect(this.Box[0],player_down[0]))
-	{
-		
-		this.idle=2;
-		
-		if(BoolIntersectRect(this.Box[0],player_down[0]).left)
-		{
+			this.CollisitionBox_00.push(makeBox("90,132,85,93,//"));
 			
-			this.position=0;
-			this.sprmonster.Mon_ChangeForward(this.position);
-			this.sprmonster.Mon_ChangeImage(5,4,4);
-			this.Invalid(2);
-			if(IntersectRect(this.AttackBox[0],player_down[0]))
-			{
-				this.isAttack=true;
-			}
-		}
-		if(BoolIntersectRect(this.Box[0],player_down[0]).right)
-		{
-			this.position=1;
-			this.sprmonster.Mon_ChangeForward(this.position);
-			this.sprmonster.Mon_ChangeImage(5,4,4);
-			this.Invalid(2);
-			if(IntersectRect(this.AttackBox[1],player_down[0]))
-			{
-				this.isAttack=true;
-			}
-		}
-		
-		
-				
-		
+			this.CollisitionBox_26.push(makeBox("90,132,85,93,//165,150,25,60,"));
+			this.CollisitionBox_26.push(makeBox("90,132,87,93,//165,150,25,60,"));
+			this.CollisitionBox_26.push(makeBox("90,132,86,93,//165,150,25,60,"));
+			this.CollisitionBox_26.push(makeBox("90,132,85,93,//165,150,25,60,"));
+
+			this.CollisitionBox_01.push(makeBox("90,134,75,93,//165,150,25,60,"));
+			this.CollisitionBox_01.push(makeBox("90,134,75,93,//165,150,25,60,"));
+			this.CollisitionBox_01.push(makeBox("90,134,75,93,//165,150,25,60,"));
+			this.CollisitionBox_01.push(makeBox("90,134,75,93,//165,150,25,60,"));
+		break;
+	};
 	
-	}
-	if(this.inputFrameSkipper.isWork()){
-	if(this.isAttack==true){
-			Status.HP-= this.Attackdamage;
-			console.log(Status.HP);
-		}
-	}
-	this.isAttack=false;
-	
-	
-	this.sprmonster.Update();
+	this.sprmonster.ChangeForward(this.position);
+	this.Invalid(0);
 };
-PGMonster.prototype.Invalid = function(NumOfcollisition)
+monster.prototype.Attacked = function(value){
+	
+//	console.log("player attack : "+value);	
+	playGameState.StateLine.PushLine("player attack : "+value);
+	
+	this.prograssbar.Set();
+	this.prograssbarOn = value;
+	
+	this.life -= value;
+	if(this.life < 0)//dead
+	{
+		Status.GetExp(this.exp);
+		this.dead = true;
+	}
+};
+monster.prototype.Render = function(Context,index){
+	if(this.dead)
+	{
+		this.alpha -= 0.05;
+		Context.save();
+		Context.globalAlpha = this.alpha;
+		this.sprmonster.Render(Context);
+		Context.restore();
+		
+		if(this.alpha < 0)
+			playGameState.Notification("DELETE_MONSTER",index);
+	}
+	else
+	{
+		if(this.prograssbar.isWork())
+		{
+			this.count = 0 ;
+			this.prograssbarOn = 0;
+			this.prograssbar.ReSet();
+			this.prograssbar.Set();
+		}	
+		if(this.prograssbarOn != 0)
+		{
+			this.count += 0.5;
+			Context.save();
+			var y = this.UpCollisitionBox[0].top;
+			var x = this.UpCollisitionBox[0].left;
+			
+			var length = 100*(this.life/this.totallife);
+			Context.fillStyle = "red";
+			Context.fillRect(x,y-10,length,10);
+			
+			Context.font = '20px Arial';
+			Context.globalAlpha = 1.0-(this.count/20);
+			Context.fillText(this.prograssbarOn,x+20,y-30-this.count);
+			Context.restore();
+		}
+		this.sprmonster.Render(Context);
+		
+		this.Icon.Render(Context,this.UpCollisitionBox[0].left,this.UpCollisitionBox[0].top);
+	}
+};
+monster.prototype.Update = function(mon_crashDirection){
+
+	if(!this.dead)
+	{	
+	var Speed = 2;
+	var player_UpCollisitionBox = playGameState.GetPlayerUpCollsionBox();
+	var player_AttackCollisitionBox = playGameState.GetPlayerAttackCollsionBox();
+	
+	if(player_AttackCollisitionBox[0] != undefined && ISIntersectRect(this.UpCollisitionBox[0] , player_AttackCollisitionBox[0]))
+	{
+		if(this.inputFrameSkipper.isWork())
+		{
+			if(this.damaged)
+				this.Attacked(Status.Attacking());
+			this.damaged = true;	
+		}	
+	}else if(this.damaged) this.damaged = false;
+		
+	if(this.idle == 4)//backmoving
+	{
+		Speed = 4.0;
+
+		if(this.position == 1)
+		{
+		if(this.f_x > this.x)
+		{
+			this.x += Speed;
+			this.Invalid();
+		}
+		else
+		{
+			this.idle = 0;
+			this.position = 0;
+			this.sprmonster.ChangeForward(this.position);
+			this.sprmonster.ChangeImage(0,1,1);
+			this.Invalid(0);
+		}
+		}
+		
+		if(this.position == 0)
+		{
+		if( this.f_x < this.x)
+		{
+			this.x -= Speed;
+			this.Invalid();
+		}
+		else
+		{
+			this.idle = 0;
+			this.position = 0;
+			this.sprmonster.ChangeForward(this.position);
+			this.sprmonster.ChangeImage(0,1,1);
+			this.Invalid(0);
+		}
+		}
+	}
+	else
+	{
+		if(ISIntersectRect(this.SeaCollisitionBox , player_UpCollisitionBox[0]) )//search
+		{
+			if(this.idle == 0)
+			{
+				this.idle = 1;
+				if(player_UpCollisitionBox[0].left < this.UpCollisitionBox[0].left)//left range
+					this.position = 0;
+				else//right range
+					this.position = 1;
+				
+				this.sprmonster.ChangeForward(this.position);
+				this.sprmonster.ChangeImage(1,4,4);
+				this.Invalid(0);
+			
+				this.inputFrameSkipper_wait.Set();
+				
+				this.Icon.on();
+			}
+		}
+		else if(this.idle == 1)//search fail!
+		{
+			this.idle = 4;
+			this.position = Math.abs(this.position - 1);
+			
+			this.sprmonster.ChangeForward(this.position);
+			this.sprmonster.ChangeImage(1,4,4);
+			this.Invalid(0);
+			
+			this.inputFrameSkipper_wait.Set();
+			this.inputFrameSkipper_wait.ReSet();
+		}
+	
+		if(this.idle == 1) // moving
+		{
+			if(this.position == 1 )
+			{
+				if(this.rightBound>this.x)
+						this.x += Speed;
+				else
+					this.x = this.rightBound;
+			
+				this.Invalid();
+			}
+			else
+			{
+				if(this.leftBound<this.x)
+					this.x -= Speed;
+				else
+					this.x = this.leftBound;		
+
+				this.Invalid();
+			}
+		
+			//Monster Attack
+			if(ISIntersectRect(this.AttackCollisitionBox[0] , player_UpCollisitionBox[0]))
+			{
+				this.inputFrameSkipper_wait.Set();
+				this.inputFrameSkipper_wait.ReSet();
+				this.idle = 5;
+				this.sprmonster.ChangeImage(5,4,4);
+				this.Invalid(0);
+				
+				this.damaging = true;
+			}
+		}
+		else if(this.idle == 5)
+		{
+			if(!ISIntersectRect(this.AttackCollisitionBox[0] , player_UpCollisitionBox[0]))
+			{
+				this.damaging = false;
+			}
+		}
+	}
+
+	if(this.inputFrameSkipper_wait.isWork())
+	{
+		this.idle = 4;
+		this.position = Math.abs(this.position - 1);
+		this.sprmonster.ChangeForward(this.position);
+		this.sprmonster.ChangeImage(1,4,4);
+		this.Invalid(0);
+			
+		this.inputFrameSkipper_wait.Set();
+		this.inputFrameSkipper_wait.ReSet();	
+	}
+
+	var info = this.sprmonster.Update();
+	
+	if(info != null){
+		//change collisition
+		
+		if(info.isLotate && this.idle == 5)//attack
+		{
+			if(this.damaging)
+				Status.Attacked(this.Damage);
+			else
+			{
+				this.idle = 0;
+				this.inputFrameSkipper_wait.Set();
+			}
+		}
+	}
+	}
+};
+monster.prototype.Invalid = function(NumOfcollisition)
 {	
 	this.sprmonster.SetPosition( this.x, this.y);
 
@@ -190,45 +332,72 @@ PGMonster.prototype.Invalid = function(NumOfcollisition)
 		
 		switch(this.idle){
 			case 0: // stop
-			CollisitionArray = this.CollisitionBox_01;
+			CollisitionArray = this.CollisitionBox_00;
 			break;
 			case 1: // walk
-			CollisitionArray = this.CollisitionBox_01;
+			case 4: // backmoving
+			CollisitionArray = this.CollisitionBox_26;
 			break;
-			case 2: // Attack
-			CollisitionArray = this.CollisitionBox_02;
+			case 5: // Attack
+			CollisitionArray = this.CollisitionBox_01;
 			break;
 		};
 		
-		this.Box = CollisitionArray[NumOfcollisition].box;
-//		console.log(NumOfcollisition+ " "+ this.idle);
-	
-		if(this.idle==2){
-		this.AttackBox = CollisitionArray[NumOfcollisition].attack;
-		}
-	
+		this.UpCollisitionBox = CollisitionArray[NumOfcollisition].up;
+		this.DownCollisitionBox = CollisitionArray[NumOfcollisition].down;
+		this.AttackCollisitionBox = CollisitionArray[NumOfcollisition].attack;	
 	}
 	
-	for(var i = 0 ; i < this.Box.length; i++){
-		this.Box[i].left = this.x + this.Box[i].x;
-		this.Box[i].top = this.y + this.Box[i].y;
-		this.Box[i].right = this.Box[i].left + this.Box[i].w;
-		this.Box[i].bottom = this.Box[i].top + this.Box[i].h;	
+	for(var i = 0 ; i < this.UpCollisitionBox.length; i++){
+		if(this.position == 0)
+			this.UpCollisitionBox[i].left = this.x + (256 - this.UpCollisitionBox[i].x - this.UpCollisitionBox[i].w);
+		else
+			this.UpCollisitionBox[i].left = this.x + this.UpCollisitionBox[i].x;
+		this.UpCollisitionBox[i].top = this.y + this.UpCollisitionBox[i].y;
+		this.UpCollisitionBox[i].right = this.UpCollisitionBox[i].left + this.UpCollisitionBox[i].w;
+		this.UpCollisitionBox[i].bottom = this.UpCollisitionBox[i].top + this.UpCollisitionBox[i].h;
 	}
-	if(this.idle==2){
-		this.AttackBox[1]={left: 0, top:0, right: 0, bottom:0, x : 0 ,y:0,w:0,h:0};
-		this.AttackBox[0].left = this.x+ 256 - (this.AttackBox[0].w+this.AttackBox[0].x);
-		this.AttackBox[0].top=this.y + this.AttackBox[0].y;
-		this.AttackBox[0].right=this.AttackBox[0].left + this.AttackBox[0].w;
-		this.AttackBox[0].bottom = this.AttackBox[0].top + this.AttackBox[0].h;
-		this.AttackBox[1].left = this.x + this.AttackBox[0].x;
-		this.AttackBox[1].top = this.AttackBox[0].top;
-		this.AttackBox[1].right = this.AttackBox[1].left + this.AttackBox[0].w;
-		this.AttackBox[1].bottom = this.AttackBox[0].bottom;
-		
+	for(var i = 0 ; i < this.DownCollisitionBox.length; i++){
+		this.DownCollisitionBox[i].left = this.x + this.DownCollisitionBox[i].x;
+		this.DownCollisitionBox[i].top = this.y + this.DownCollisitionBox[i].y;
+		this.DownCollisitionBox[i].right = this.DownCollisitionBox[i].left + this.DownCollisitionBox[i].w;
+		this.DownCollisitionBox[i].bottom = this.DownCollisitionBox[i].top + this.DownCollisitionBox[i].h;
+	}
+	for(var i = 0 ; i < this.AttackCollisitionBox.length; i++){
+		if(this.position == 0)
+			this.AttackCollisitionBox[i].left = this.x + (256 - this.AttackCollisitionBox[i].x - this.AttackCollisitionBox[i].w);
+		else
+			this.AttackCollisitionBox[i].left = this.x + this.AttackCollisitionBox[i].x;
+		this.AttackCollisitionBox[i].top = this.y + this.AttackCollisitionBox[i].y;
+		this.AttackCollisitionBox[i].right = this.AttackCollisitionBox[i].left + this.AttackCollisitionBox[i].w;
+		this.AttackCollisitionBox[i].bottom = this.AttackCollisitionBox[i].top + this.AttackCollisitionBox[i].h;
 	}
 	
-	this.array={left : this.Box[0].left-120, top : this.Box[0].top, right : this.Box[0].right+120, bottom : this.Box[0].bottom};
+	this.SeaCollisitionBox = {left : this.UpCollisitionBox[0].left-this.sea,right : this.UpCollisitionBox[0].right+ this.sea, top : this.UpCollisitionBox[0].top, bottom : this.UpCollisitionBox[0].bottom};
+	this.leftBound =  0 - this.UpCollisitionBox[0].x;
+	this.rightBound = 1280 - 256 + this.UpCollisitionBox[0].x+this.UpCollisitionBox[0].w;
 };
+function icon(){
+	this.plag = false;
+	this.fs = new FrameSkipper(1000);
+	this.count = 0;
+}
+icon.prototype.Render = function(Context,x,y){
 
-
+	if(this.fs.isWork())
+	{
+		this.plag = false;
+		this.count = 0;
+	}	
+	if(this.plag)
+	{
+		this.count += 0.005;
+		Context.save();
+		Context.fillStyle = "yellow";
+		Context.font = '40px Arial bold';
+		Context.globalAlpha = 1.0 - this.count;
+		Context.fillText("!",x+30,y-40);
+		Context.restore();
+	}
+};
+icon.prototype.on = function(){this.plag = true;};

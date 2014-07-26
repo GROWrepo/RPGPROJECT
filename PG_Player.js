@@ -125,34 +125,7 @@ PGPlayer.prototype.makeCollisition = function(){
 	this.CollisitionBox_15.push(makeBox("114,159,38,23,/107,163,42,54,/"));this.CollisitionBox_15.push(makeBox("113,131,33,35,/109,163,28,54,/"));
 	this.CollisitionBox_15.push(makeBox("118,123,25,43,/114,163,22,54,/"));this.CollisitionBox_15.push(makeBox("119,121,22,39,/116,163,23,54,/")); //217
 };
-function makeBox(data){
-	
-	var UpRect = new Array();
-	var DownRect = new Array();
-	var AttackRect = new Array();
-	
-	var strArray = data.split("/");
-		
-	var preStr = strArray[0].split(",");
-	for(var i = 0 ; i < preStr.length-1; i++)
-			if(i%4 == 0){
-				UpRect.push({left:0,top:0,right:0,bottom:0,x : parseInt(preStr[i+0]) , y : parseInt(preStr[i+1]) , w : parseInt(preStr[i+2]) , h : parseInt(preStr[i+3]) });
-			}
-			
-		preStr = strArray[1].split(",");
-		for(var i = 0 ; i < preStr.length-1; i++)
-			if(i%4 == 0){
-				DownRect.push({left:0,top:0,right:0,bottom:0,x : parseInt(preStr[i+0]) , y : parseInt(preStr[i+1]) , w : parseInt(preStr[i+2]) , h : parseInt(preStr[i+3]) });
-			}
-			
-		preStr = strArray[2].split(",");
-		for(var i = 0 ; i < preStr.length-1; i++)
-			if(i%4 == 0){
-				AttackRect.push({left:0,top:0,right:0,bottom:0,x : parseInt(preStr[i+0]) , y : parseInt(preStr[i+1]) , w : parseInt(preStr[i+2]) , h : parseInt(preStr[i+3]) });
-			}		
-				
-	return {up : UpRect , down : DownRect , attack : AttackRect}; 
-}
+
 PGPlayer.prototype.Render = function(){
 	
 	var theCanvas = document.getElementById("GameCanvas");
@@ -432,8 +405,6 @@ PGPlayer.prototype.Update = function(crashDirection){
 };
 PGPlayer.prototype.Invalid = function(NumOfcollisition)
 {
-	var l,r,t,b;
-	
 	this.sprplayer.SetPosition( this.x, this.y);
 
 	if(NumOfcollisition != undefined)

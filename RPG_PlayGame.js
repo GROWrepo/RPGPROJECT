@@ -13,8 +13,11 @@ function PlayGameState(stage)
 	this.Map = new MapTile(this.stage);
 	this.Object = new PGObject();
 	this.Menu = new PGMenu();
+	this.StateLine = new RPG_StateLine();
 	Item = new PGItem();
 	Status = new PGStatus(1, 100);
+	
+//	this.chat1 = new PG_chating("f_akiha","아키하","Test..../엔터작동확인/대화..   동해물과백두산이마르고닳도록");
 	
 	this.isGameStop = false;
 	this.InMenuState = false;
@@ -67,7 +70,8 @@ function PlayGameState(stage)
 
 PlayGameState.prototype.Init = function()
 {
-	soundSystem.PlayBackgroundMusic("sound/ElegantSummer.wav");
+//	soundSystem.PlayBackgroundMusic("sound/ElegantSummer.wav");
+//	this.StateLine.PushLine("hello");
 };
 PlayGameState.prototype.Render = function()
 {
@@ -82,6 +86,9 @@ PlayGameState.prototype.Render = function()
 		this.monster.Render();
 	}
 	Status.Render();
+	this.StateLine.Render();
+	
+//	this.chat1.Render();
 	
 	//text filed x : 0 ~ 800 / y : 0 ~ 130
 	Context.fillStyle = "#ffffff";
@@ -97,7 +104,7 @@ PlayGameState.prototype.Update = function()
 	if(!this.isGameStop)
 	{
 		var crashDirection = this.Map.CheckCollision();
-		var mon_crashDirection = this.Map.Mon_CheckCollision();
+		var mon_crashDirection = this.Map.Mon_CheckCollision(this.monster.monsterArray);
 		this.player.Update(crashDirection);
 		this.monster.Update(mon_crashDirection);
 		this.Object.Update();
@@ -142,8 +149,8 @@ PlayGameState.prototype.Notification = function(msg,value)
 			soundSystem.PlaySound("sound/game_bgm_lose.ogg");
 			ChangeGameState(new TransitionFadeOut(this,new TitleState,1.8));
 		break;
-		case "CRASH_L_ENEMY":
-			this.player.Crash(1);
+		case "DELETE_MONSTER":
+			this.monster.DelMonster(value);
 		break;
 		case "GOAL":
 			soundSystem.StopBackgroundMusic();
@@ -160,8 +167,8 @@ PlayGameState.prototype.NotificationCrash = function(direction, value)
 		this.player.x += value;
 		this.player.Invalid();
 	}else{
-		if(value != 0)
-			debugSystem.Log("LOG","crash vertical : " + value);
+//		if(value != 0)
+//			debugSystem.Log("LOG","crash vertical : " + value);
 		this.player.y += value;
 		this.player.Invalid();
 	}
@@ -179,21 +186,14 @@ PlayGameState.prototype.GetPlayerAttackCollsionBox = function()
 {
 	return this.player.AttackCollisitionBox;
 };
-PlayGameState.prototype.GetMonsterBox =function()
-{
-	return this.monster.Box;
-};
-PlayGameState.prototype.GetMonsterAttackBox =function()
-{
-	return this.monster.AttackBox;
-};
-PlayGameState.prototype.mon_NotificationCrash = function(direction, value)
+
+PlayGameState.prototype.mon_NotificationCrash = function(direction, value, Number)
 {
 	if(direction){
-		this.monster.x += value;
-		this.monster.Invalid();
+		this.monster.monsterArray[Number].x += value;
+		this.monster.monsterArray[Number].Invalid();
 	}else{
-		this.monster.y += value;
-		this.monster.Invalid();
+		this.monster.monsterArray[Number].y += value;
+		this.monster.monsterArray[Number].Invalid();
 	}
 };
