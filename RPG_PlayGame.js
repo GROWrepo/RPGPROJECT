@@ -82,8 +82,8 @@ PlayGameState.prototype.Render = function()
 	{
 		this.background.Render();
 		this.Map.Render();
-		this.player.Render();
 		this.monster.Render();
+		this.player.Render();
 	}
 	Status.Render();
 	this.StateLine.Render();
@@ -105,8 +105,12 @@ PlayGameState.prototype.Update = function()
 	{
 		var crashDirection = this.Map.CheckCollision();
 		var mon_crashDirection = this.Map.Mon_CheckCollision(this.monster.monsterArray);
-		this.player.Update(crashDirection);
-		this.monster.Update(mon_crashDirection);
+		var attackNumber = this.player.Update(crashDirection);
+
+		if(attackNumber == undefined)
+			attackNumber = -1;
+			
+		this.monster.Update(mon_crashDirection,attackNumber);
 		this.Object.Update();
 	}
 	else // menu

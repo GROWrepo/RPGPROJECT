@@ -19,9 +19,9 @@ PGMonster.prototype.Render = function(){
 		this.monsterArray[i].Render(Context);
 	
 };
-PGMonster.prototype.Update = function(){
+PGMonster.prototype.Update = function(mon_crashDirection,attackNumber){
 	for(var i = 0 ; i < this.monsterArray.length ; i++)
-		this.monsterArray[i].Update();	
+		this.monsterArray[i].Update(mon_crashDirection,attackNumber);	
 };
 
 function monster(name, x, y){
@@ -66,6 +66,8 @@ function monster(name, x, y){
 	
 	this.damaging = false;
 	this.damaged = false;
+	this.nuckback = 0;
+	
 	this.inputFrameSkipper_wait;
 	this.Icon = new icon();
 	
@@ -78,7 +80,7 @@ monster.prototype.Init = function(){
 			this.life = 100;
 			this.Damage = 12;
 			this.exp = 20;
-			this.sea = 300;
+			this.sea = 100;
 			this.sprmonster= new GraphicObjectAnimation("sk", 0, 1, 1);
 					
 			this.inputFrameSkipper_wait = new FrameSkipper(5000);
@@ -104,14 +106,17 @@ monster.prototype.Init = function(){
 	this.Invalid(0);
 };
 monster.prototype.Attacked = function(value){
+	var critical = value % 10;
 	
-//	console.log("player attack : "+value);	
-	playGameState.StateLine.PushLine("player attack : "+value);
-	
+	if(critical == 0)
+		playGameState.StateLine.PushLine("player attack : "+value/10);
+	else
+		playGameState.StateLine.PushLine("Critical! player attack : "+value/10);
+		
 	this.prograssbar.Set();
 	this.prograssbarOn = value;
 	
-	this.life -= value;
+	this.life -= value / 10;
 	if(this.life < 0)//dead
 	{
 		Status.GetExp(this.exp);
@@ -132,6 +137,25 @@ monster.prototype.Render = function(Context,index){
 	}
 	else
 	{
+		var y = this.UpCollisitionBox[0].bottom;
+		var x = this.UpCollisitionBox[0].left;
+		
+		//bar
+		Context.save();
+		var length = 100*(this.life/this.totallife);
+		Context.fillStyle = "red";
+		DrawBorder(Context,"white",2,x-2,y+3,104,14);
+		Context.fillRect(x,y+5,length,10);
+		
+		Context.fillStyle = "white";
+		Context.font = '20px Arial';
+		Context.fillText(this.name,x+20,this.UpCollisitionBox[0].top-20);
+		Context.restore();
+		
+		this.sprmonster.Render(Context);
+		
+		this.Icon.Render(Context,this.UpCollisitionBox[0].left,this.UpCollisitionBox[0].top);
+		
 		if(this.prograssbar.isWork())
 		{
 			this.count = 0 ;
@@ -139,45 +163,53 @@ monster.prototype.Render = function(Context,index){
 			this.prograssbar.ReSet();
 			this.prograssbar.Set();
 		}	
-		if(this.prograssbarOn != 0)
+		if(this.prograssbarOn != 0)//dameged
 		{
+			y = this.UpCollisitionBox[0].top;
 			this.count += 0.5;
-			Context.save();
-			var y = this.UpCollisitionBox[0].top;
-			var x = this.UpCollisitionBox[0].left;
-			
-			var length = 100*(this.life/this.totallife);
-			Context.fillStyle = "red";
-			Context.fillRect(x,y-10,length,10);
-			
-			Context.font = '20px Arial';
+			Context.save();	
+			Context.font = '30px Arial';
 			Context.globalAlpha = 1.0-(this.count/20);
-			Context.fillText(this.prograssbarOn,x+20,y-30-this.count);
+			
+			if(this.prograssbarOn % 10 == 1)
+				Context.fillStyle = "red";
+			else
+				Context.fillStyle = "blue";
+			
+			Context.fillText(this.prograssbarOn/10,x+20,y-50-this.count);
 			Context.restore();
 		}
-		this.sprmonster.Render(Context);
-		
-		this.Icon.Render(Context,this.UpCollisitionBox[0].left,this.UpCollisitionBox[0].top);
 	}
 };
-monster.prototype.Update = function(mon_crashDirection){
+monster.prototype.Update = function(mon_crashDirection,attackNumber){
 
 	if(!this.dead)
 	{	
 	var Speed = 2;
 	var player_UpCollisitionBox = playGameState.GetPlayerUpCollsionBox();
 	var player_AttackCollisitionBox = playGameState.GetPlayerAttackCollsionBox();
-	
-	if(player_AttackCollisitionBox[0] != undefined && ISIntersectRect(this.UpCollisitionBox[0] , player_AttackCollisitionBox[0]))
-	{
-		if(this.inputFrameSkipper.isWork())
-		{
-			if(this.damaged)
-				this.Attacked(Status.Attacking());
-			this.damaged = true;	
-		}	
-	}else if(this.damaged) this.damaged = false;
+
+	if(attackNumber == 1)
+		this.damaged = true;
 		
+	if(this.damaged && player_AttackCollisitionBox[0] != undefined && ISIntersectRect(this.UpCollisitionBox[0] , player_AttackCollisitionBox[0]))
+	{
+		this.nuckback = 0;
+		this.damaged = false;
+		this.Attacked(Status.Attacking());
+	}
+	
+	if(this.prograssbarOn != 0 && this.nuckback < 10)//nuckback
+	{
+		if(this.position == 1)
+			this.x -= 2;
+		else
+			this.x += 2;
+		
+		this.Invalid();
+		this.nuckback += 2;		
+	}
+	
 	if(this.idle == 4)//backmoving
 	{
 		Speed = 4.0;
@@ -223,18 +255,15 @@ monster.prototype.Update = function(mon_crashDirection){
 			if(this.idle == 0)
 			{
 				this.idle = 1;
-				if(player_UpCollisitionBox[0].left < this.UpCollisitionBox[0].left)//left range
-					this.position = 0;
-				else//right range
-					this.position = 1;
-				
+			
 				this.sprmonster.ChangeForward(this.position);
 				this.sprmonster.ChangeImage(1,4,4);
 				this.Invalid(0);
 			
 				this.inputFrameSkipper_wait.Set();
 				
-				this.Icon.on();
+				if(this.x == this.f_x)
+					this.Icon.on();
 			}
 		}
 		else if(this.idle == 1)//search fail!
@@ -252,6 +281,11 @@ monster.prototype.Update = function(mon_crashDirection){
 	
 		if(this.idle == 1) // moving
 		{
+			if(player_UpCollisitionBox[0].left < this.UpCollisitionBox[0].left)//left range
+					this.position = 0;
+				else//right range
+					this.position = 1;
+			
 			if(this.position == 1 )
 			{
 				if(this.rightBound>this.x)
@@ -274,6 +308,7 @@ monster.prototype.Update = function(mon_crashDirection){
 			//Monster Attack
 			if(ISIntersectRect(this.AttackCollisitionBox[0] , player_UpCollisitionBox[0]))
 			{
+				console.log("on");
 				this.inputFrameSkipper_wait.Set();
 				this.inputFrameSkipper_wait.ReSet();
 				this.idle = 5;
@@ -283,16 +318,10 @@ monster.prototype.Update = function(mon_crashDirection){
 				this.damaging = true;
 			}
 		}
-		else if(this.idle == 5)
-		{
-			if(!ISIntersectRect(this.AttackCollisitionBox[0] , player_UpCollisitionBox[0]))
-			{
-				this.damaging = false;
-			}
-		}
+		
 	}
 
-	if(this.inputFrameSkipper_wait.isWork())
+	if(this.inputFrameSkipper_wait.isWork() || (this.x > this.f_x + this.sea*2 || this.x < this.f_x - this.sea*2))
 	{
 		this.idle = 4;
 		this.position = Math.abs(this.position - 1);
@@ -309,15 +338,23 @@ monster.prototype.Update = function(mon_crashDirection){
 	if(info != null){
 		//change collisition
 		
-		if(info.isLotate && this.idle == 5)//attack
+		if(this.idle == 5)
 		{
-			if(this.damaging)
-				Status.Attacked(this.Damage);
-			else
-			{
-				this.idle = 0;
-				this.inputFrameSkipper_wait.Set();
-			}
+		if(info.current == 0)
+			this.damaging = true;
+		
+		if(this.damaging && ISIntersectRect(this.AttackCollisitionBox[0] , player_UpCollisitionBox[0]))
+		{
+			Status.Attacked(this.Damage);
+			this.damaging = false;
+		}
+		
+		if(info.isLotate)//attack
+		{
+			this.idle = 0;
+			this.inputFrameSkipper_wait.Set();
+			this.damaging = false;
+		}
 		}
 	}
 	}
@@ -373,7 +410,7 @@ monster.prototype.Invalid = function(NumOfcollisition)
 		this.AttackCollisitionBox[i].bottom = this.AttackCollisitionBox[i].top + this.AttackCollisitionBox[i].h;
 	}
 	
-	this.SeaCollisitionBox = {left : this.UpCollisitionBox[0].left-this.sea,right : this.UpCollisitionBox[0].right+ this.sea, top : this.UpCollisitionBox[0].top, bottom : this.UpCollisitionBox[0].bottom};
+	this.SeaCollisitionBox = {left : this.UpCollisitionBox[0].left-this.sea,right : this.UpCollisitionBox[0].right+ this.sea, top : this.UpCollisitionBox[0].top-this.sea, bottom : this.UpCollisitionBox[0].bottom+this.sea};
 	this.leftBound =  0 - this.UpCollisitionBox[0].x;
 	this.rightBound = 1280 - 256 + this.UpCollisitionBox[0].x+this.UpCollisitionBox[0].w;
 };
@@ -396,7 +433,7 @@ icon.prototype.Render = function(Context,x,y){
 		Context.fillStyle = "yellow";
 		Context.font = '40px Arial bold';
 		Context.globalAlpha = 1.0 - this.count;
-		Context.fillText("!",x+30,y-40);
+		Context.fillText("!",x+30,y-50);
 		Context.restore();
 	}
 };

@@ -16,8 +16,8 @@ function onGameInit()
 
 	//121.152.186.155
 	//init state setting
-//	after_loading_state = new TitleState();
-	after_loading_state = new LogoState();
+//	after_loading_state = new LogoState();
+	after_loading_state = new PlayGameState();
 	
 	setInterval(gameLoop, 1000/GAME_FPS);
 }

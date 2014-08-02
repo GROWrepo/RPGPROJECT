@@ -11,6 +11,9 @@ function PGStatus(level,maxhp){
 	this.Exp = 0;
 	this.NextExp = 300;
 	
+	this.fs = new FrameSkipper(1000);
+	this.hit = 0;
+	
 	this.inventory = new Inventory();
 	//equip
 	this.equipment = new Array();//w , a, n, r , s
@@ -96,7 +99,14 @@ PGStatus.prototype.Healing = function(value){
 		this.HP = this.MaxHP;
 };
 PGStatus.prototype.Attacking = function(){
-	return (this.Ability.Attack + this.Ability.str*0.1);
+	
+	this.fs.ReSet();
+	this.hit++;
+	var critical = 50*(this.Ability.dex*0.01)/100;
+	if( RandomNextInt(0,100) < critical )
+		return (this.Ability.Attack + this.Ability.str*0.1)*10+1;
+	else
+		return (this.Ability.Attack + this.Ability.str*0.1)*10+0;
 };
 PGStatus.prototype.Attacked = function(value){
 	
@@ -177,6 +187,16 @@ PGStatus.prototype.Render = function(){
 	Context.fillText("LEV : " + this.Level, 180 ,720 + 10);
 	Context.fillText("HP : " + this.HP+" / "+this.MaxHP, 300 ,720 + 10);
 	Context.fillText("EXP : " + this.Exp+" / "+this.NextExp, 500 ,720 + 10);
+	
+	if(this.fs.isWork())
+		this.hit = 0;
+	if(this.hit > 0)
+	{
+		Context.font = '40px Arial';
+		Context.fillText("Hit", 800 ,200);
+		Context.font = '30px Arial';
+		Context.fillText(this.hit +"  COMBO!", 800 ,250);
+	}
 };
 
 function Inventory(){

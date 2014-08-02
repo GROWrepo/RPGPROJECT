@@ -22,7 +22,7 @@ RPG_StateLine.prototype.Render = function (){
 	Context.save();	
 	Context.fillStyle = "green"; // white
 	Context.textBaseline = "top";
-	Context.font = '15px Arial';
+	Context.font = '16px Arial';
 	for(var i = this.line.length -1 ; i > -1 ; i--)
 	{
 		var index = (this.line.length -1 - i);

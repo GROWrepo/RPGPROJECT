@@ -50,8 +50,8 @@ PGPlayer.prototype.setPosition = function(x,y){
 	this.isDashing = false;
 	this.isAttack = false;
 	this.isJump = false;
-	this.idle = 0;
-	this.position = 1;
+//	this.idle = 0;
+//	this.position = 1;
 		
 	this.Invalid(0);
 };
@@ -182,7 +182,7 @@ PGPlayer.prototype.Update = function(crashDirection){
 		else if(inputSystem.isKeyDown(88) && this.preidle != 2)//x : attack
 		{
 			this.idle = 5;
-			this.sprplayer.ChangeImage(5, 6, 6);
+			this.sprplayer.ChangeImage(5, 6, 12);
 			this.sprplayer.ChangeForward(this.position);
 		
 			this.Invalid(5);
@@ -375,7 +375,6 @@ PGPlayer.prototype.Update = function(crashDirection){
 		
 		this.Invalid(0);
 	}
-	this.preidle = this.idle;
 	
 	//dash
 	if(inputSystem.isKeyDown(37))
@@ -402,6 +401,14 @@ PGPlayer.prototype.Update = function(crashDirection){
 			this.isDash.right = true;
 		}
 	}
+	
+	//monster process
+	if(info != null && this.preidle == 5)
+	{
+		this.preidle = this.idle;	
+		return info.current;
+	}	
+	this.preidle = this.idle;
 };
 PGPlayer.prototype.Invalid = function(NumOfcollisition)
 {
@@ -433,26 +440,34 @@ PGPlayer.prototype.Invalid = function(NumOfcollisition)
 		};
 		
 		this.UpCollisitionBox = CollisitionArray[NumOfcollisition].up;
-//		console.log(NumOfcollisition+ " "+ this.idle);
 		this.DownCollisitionBox = CollisitionArray[NumOfcollisition].down;
 		this.AttackCollisitionBox = CollisitionArray[NumOfcollisition].attack;
 		
 	}
 	
 	for(var i = 0 ; i < this.UpCollisitionBox.length; i++){
-		this.UpCollisitionBox[i].left = this.x + this.UpCollisitionBox[i].x;
+		if(this.position == 0)
+			this.UpCollisitionBox[i].left = this.x + (256 - this.UpCollisitionBox[i].x - this.UpCollisitionBox[i].w);
+		else
+			this.UpCollisitionBox[i].left = this.x + this.UpCollisitionBox[i].x;
 		this.UpCollisitionBox[i].top = this.y + this.UpCollisitionBox[i].y;
 		this.UpCollisitionBox[i].right = this.UpCollisitionBox[i].left + this.UpCollisitionBox[i].w;
 		this.UpCollisitionBox[i].bottom = this.UpCollisitionBox[i].top + this.UpCollisitionBox[i].h;
 	}
 	for(var i = 0 ; i < this.DownCollisitionBox.length; i++){
-		this.DownCollisitionBox[i].left = this.x + this.DownCollisitionBox[i].x;
+		if(this.position == 0)
+			this.DownCollisitionBox[i].left = this.x + (256 - this.DownCollisitionBox[i].x - this.DownCollisitionBox[i].w);
+		else
+			this.DownCollisitionBox[i].left = this.x + this.DownCollisitionBox[i].x;
 		this.DownCollisitionBox[i].top = this.y + this.DownCollisitionBox[i].y;
 		this.DownCollisitionBox[i].right = this.DownCollisitionBox[i].left + this.DownCollisitionBox[i].w;
 		this.DownCollisitionBox[i].bottom = this.DownCollisitionBox[i].top + this.DownCollisitionBox[i].h;
 	}
 	for(var i = 0 ; i < this.AttackCollisitionBox.length; i++){
-		this.AttackCollisitionBox[i].left = this.x + this.AttackCollisitionBox[i].x;
+		if(this.position == 0)
+			this.AttackCollisitionBox[i].left = this.x + (256 - this.AttackCollisitionBox[i].x - this.AttackCollisitionBox[i].w);
+		else
+			this.AttackCollisitionBox[i].left = this.x + this.AttackCollisitionBox[i].x;
 		this.AttackCollisitionBox[i].top = this.y + this.AttackCollisitionBox[i].y;
 		this.AttackCollisitionBox[i].right = this.AttackCollisitionBox[i].left + this.AttackCollisitionBox[i].w;
 		this.AttackCollisitionBox[i].bottom = this.AttackCollisitionBox[i].top + this.AttackCollisitionBox[i].h;
