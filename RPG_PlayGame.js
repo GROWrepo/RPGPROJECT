@@ -70,7 +70,7 @@ function PlayGameState(stage)
 
 PlayGameState.prototype.Init = function()
 {
-//	soundSystem.PlayBackgroundMusic("sound/ElegantSummer.wav");
+	soundSystem.PlayBackgroundMusic("sound/ElegantSummer.wav");
 //	this.StateLine.PushLine("hello");
 };
 PlayGameState.prototype.Render = function()

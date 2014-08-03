@@ -116,7 +116,7 @@ PGStatus.prototype.Attacked = function(value){
 		playGameState.StateLine.PushLine("player avoid");
 	else
 	{
-		console.log("player is attaked "+(value-this.Ability.Defense));
+//		console.log("player is attaked "+(value-this.Ability.Defense));
 		if(value - this.Ability.Defense > 0)
 		{
 			this.HP -= (value - this.Ability.Defense);

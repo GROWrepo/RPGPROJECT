@@ -23,75 +23,35 @@ GraphicObjectAnimation.prototype.Init = function(){
 	this.img = null;
 	this.img = new Array();
 	
-	var str = this.name;
-	switch(this.type){
-		case 0 : // stand
-			str += "00";
-			for (var i = 0; i< this.totalFrameCount ; i++){
-				if(i<10)
-					this.img.push(resourcePreLoader.GetImage("img/"+str+"00"+i+".png"));
-				else if(i<100)
-					this.img.push(resourcePreLoader.GetImage("img/"+str+"0"+i+".png"));
-			}
-		break;
-		case 1: // walk
-			str += "26";
-			for (var i = 0; i< this.totalFrameCount ; i++){
-				if((i+1)<10)
-					this.img.push(resourcePreLoader.GetImage("img/"+str+"00"+(i+1)+".png"));
-				else if((i+1)<100)
-					this.img.push(resourcePreLoader.GetImage("img/"+str+"0"+(i+1)+".png"));
-			}
-		break;
-		case 2: // dash
-			str += "13";
-			for (var i = 0; i< this.totalFrameCount ; i++){
-				if(i<10)
-					this.img.push(resourcePreLoader.GetImage("img/"+str+"00"+i+".png"));
-				else if(i<100)
-					this.img.push(resourcePreLoader.GetImage("img/"+str+"0"+i+".png"));
-			}
-		break;
-		case 3: // jump
-			str += "17";
-			for (var i = 0; i< this.totalFrameCount ; i++){
-				if(i<10)
-					this.img.push(resourcePreLoader.GetImage("img/"+str+"00"+i+".png"));
-				else if(i<100)
-					this.img.push(resourcePreLoader.GetImage("img/"+str+"0"+i+".png"));
-			}
-		break;
-		case 4: // Movingjump
-			str += "15";
-			for (var i = 0; i< this.totalFrameCount ; i++){
-				if(i<10)
-					this.img.push(resourcePreLoader.GetImage("img/"+str+"00"+i+".png"));
-				else if(i<100)
-					this.img.push(resourcePreLoader.GetImage("img/"+str+"0"+i+".png"));
-			}
-		break;
-		case 5: // Attack
-			str += "01";
-			for (var i = 0; i< this.totalFrameCount ; i++){
-				if(i<10)
-					this.img.push(resourcePreLoader.GetImage("img/"+str+"00"+i+".png"));
-				else if(i<100)
-					this.img.push(resourcePreLoader.GetImage("img/"+str+"0"+i+".png"));
-			}
-		break;
-	};
+	var str = "";
+	if(this.type < 10)
+		str = this.name+"0"+this.type;
+	else
+		str = this.name+this.type;
+	
+	for (var i = 0; i< this.totalFrameCount ; i++)
+	{
+		if(i<10)
+			this.img.push(resourcePreLoader.GetImage("img/"+str+"00"+i+".png"));
+		else if(i<100)
+			this.img.push(resourcePreLoader.GetImage("img/"+str+"0"+i+".png"));
+	}
+
 };
 GraphicObjectAnimation.prototype.ChangeFrame = function(){
-	if(this.type == 3)//j
+	if(this.type == 17)//j
 		this.currentFrame = ((this.totalFrameCount - 8) - this.currentFrame);
-	else if(this.type == 4)// mj
+	else if(this.type == 15)// mj
 		this.currentFrame = ((this.totalFrameCount - 4) - this.currentFrame);
+	else if(this.type == 28)
+		this.currentFrame = 5;
 };
-GraphicObjectAnimation.prototype.ChangeImage = function( type, totalFrameCount, fps)
+GraphicObjectAnimation.prototype.ChangeImage = function(type, totalFrameCount, fps)
 {	
 	this.type = type;
 	this.totalFrameCount = totalFrameCount;
 	this.currentFrame = 0;
+//	this.animationTimer.Reset();
 	this.fps = fps;
 	
 	this.Init();
@@ -99,7 +59,7 @@ GraphicObjectAnimation.prototype.ChangeImage = function( type, totalFrameCount, 
 GraphicObjectAnimation.prototype.ChangeForward = function(forward)
 {
 	this.currentFrame = 0;//init
-	
+//	this.animationTimer.Reset();
 	if(forward == 1)
 		this.forward = true;
 	else
@@ -112,7 +72,7 @@ GraphicObjectAnimation.prototype.Render = function (context)
 		context.drawImage(this.img[this.currentFrame],this.x,this.y);
 	}
 	else
-	{
+	{	
 		context.save();
 		context.translate(256+this.x*2, 0);//img size 256
 		context.scale(-1, 1);

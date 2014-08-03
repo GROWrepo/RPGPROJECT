@@ -74,13 +74,13 @@ Resource.prototype.AddImage = function(){
 	resourcePreLoader.AddImage("img/aki17012.png");resourcePreLoader.AddImage("img/aki17026.png");
 	resourcePreLoader.AddImage("img/aki17013.png");resourcePreLoader.AddImage("img/aki17027.png");
 	
-//	resourcePreLoader.AddImage("img/aki26000.png");
+	resourcePreLoader.AddImage("img/aki26000.png");
 	resourcePreLoader.AddImage("img/aki26007.png");
 	resourcePreLoader.AddImage("img/aki26001.png");resourcePreLoader.AddImage("img/aki26008.png");
 	resourcePreLoader.AddImage("img/aki26002.png");resourcePreLoader.AddImage("img/aki26009.png");
 	resourcePreLoader.AddImage("img/aki26003.png");resourcePreLoader.AddImage("img/aki26010.png");
 	resourcePreLoader.AddImage("img/aki26004.png");resourcePreLoader.AddImage("img/aki26011.png");
-	resourcePreLoader.AddImage("img/aki26005.png");resourcePreLoader.AddImage("img/aki26012.png");
+	resourcePreLoader.AddImage("img/aki26005.png");
 	resourcePreLoader.AddImage("img/aki26006.png");
 	
 	//24
@@ -97,13 +97,63 @@ Resource.prototype.AddImage = function(){
 	resourcePreLoader.AddImage("img/aki15010.png");resourcePreLoader.AddImage("img/aki15022.png");
 	resourcePreLoader.AddImage("img/aki15011.png");resourcePreLoader.AddImage("img/aki15023.png");
 	
+	//피격
+	resourcePreLoader.AddImage("img/aki21000.png");resourcePreLoader.AddImage("img/aki21003.png");
+	resourcePreLoader.AddImage("img/aki21001.png");resourcePreLoader.AddImage("img/aki21004.png");
+	resourcePreLoader.AddImage("img/aki21002.png");resourcePreLoader.AddImage("img/aki21005.png");
+	resourcePreLoader.AddImage("img/aki21006.png");
+	resourcePreLoader.AddImage("img/aki23000.png");resourcePreLoader.AddImage("img/aki23003.png");
+	resourcePreLoader.AddImage("img/aki23001.png");resourcePreLoader.AddImage("img/aki23004.png");
+	resourcePreLoader.AddImage("img/aki23002.png");resourcePreLoader.AddImage("img/aki23005.png");
+	resourcePreLoader.AddImage("img/aki23006.png");
+	
+	//발공격
+	resourcePreLoader.AddImage("img/aki40000.png");resourcePreLoader.AddImage("img/aki40006.png");
+	resourcePreLoader.AddImage("img/aki40001.png");resourcePreLoader.AddImage("img/aki40007.png");
+	resourcePreLoader.AddImage("img/aki40002.png");resourcePreLoader.AddImage("img/aki40008.png");
+	resourcePreLoader.AddImage("img/aki40003.png");resourcePreLoader.AddImage("img/aki40009.png");
+	resourcePreLoader.AddImage("img/aki40004.png");resourcePreLoader.AddImage("img/aki40010.png");
+	resourcePreLoader.AddImage("img/aki40005.png");
+	
+	//앉기
+	resourcePreLoader.AddImage("img/aki28000.png");resourcePreLoader.AddImage("img/aki28007.png");
+	resourcePreLoader.AddImage("img/aki28001.png");resourcePreLoader.AddImage("img/aki28008.png");
+	resourcePreLoader.AddImage("img/aki28002.png");resourcePreLoader.AddImage("img/aki28009.png");
+	resourcePreLoader.AddImage("img/aki28003.png");resourcePreLoader.AddImage("img/aki28010.png");
+	resourcePreLoader.AddImage("img/aki28004.png");resourcePreLoader.AddImage("img/aki28011.png");
+	resourcePreLoader.AddImage("img/aki28005.png");resourcePreLoader.AddImage("img/aki28012.png");
+	resourcePreLoader.AddImage("img/aki28006.png");resourcePreLoader.AddImage("img/aki28013.png");
+	
+	//앉아 공격
+	resourcePreLoader.AddImage("img/aki47000.png");resourcePreLoader.AddImage("img/aki47003.png");
+	resourcePreLoader.AddImage("img/aki47001.png");resourcePreLoader.AddImage("img/aki47004.png");
+	resourcePreLoader.AddImage("img/aki47002.png");
+	
+	//앚아 피격
+	resourcePreLoader.AddImage("img/aki23000.png");resourcePreLoader.AddImage("img/aki23004.png");
+	resourcePreLoader.AddImage("img/aki23001.png");resourcePreLoader.AddImage("img/aki23005.png");
+	resourcePreLoader.AddImage("img/aki23002.png");resourcePreLoader.AddImage("img/aki23006.png");
+	resourcePreLoader.AddImage("img/aki23003.png");
+	
+	resourcePreLoader.AddImage("img/aki93000.png");resourcePreLoader.AddImage("img/aki93007.png");
+	resourcePreLoader.AddImage("img/aki93001.png");resourcePreLoader.AddImage("img/aki93008.png");
+	resourcePreLoader.AddImage("img/aki93002.png");resourcePreLoader.AddImage("img/aki93009.png");
+	resourcePreLoader.AddImage("img/aki93003.png");resourcePreLoader.AddImage("img/aki93010.png");
+	resourcePreLoader.AddImage("img/aki93004.png");resourcePreLoader.AddImage("img/aki93011.png");
+	resourcePreLoader.AddImage("img/aki93005.png");resourcePreLoader.AddImage("img/aki93012.png");
+	resourcePreLoader.AddImage("img/aki93006.png");resourcePreLoader.AddImage("img/aki93013.png");
+	
+	resourcePreLoader.AddImage("img/aki91000.png");resourcePreLoader.AddImage("img/aki91003.png");
+	resourcePreLoader.AddImage("img/aki91001.png");resourcePreLoader.AddImage("img/aki91004.png");
+	resourcePreLoader.AddImage("img/aki91002.png");resourcePreLoader.AddImage("img/aki91005.png");
+	
 	//monster
 	resourcePreLoader.AddImage("img/sk00000.png");
 	
 	resourcePreLoader.AddImage("img/sk01000.png");resourcePreLoader.AddImage("img/sk01001.png");
 	resourcePreLoader.AddImage("img/sk01002.png");resourcePreLoader.AddImage("img/sk01003.png");
 	
-	resourcePreLoader.AddImage("img/sk26004.png");resourcePreLoader.AddImage("img/sk26001.png");
+	resourcePreLoader.AddImage("img/sk26000.png");resourcePreLoader.AddImage("img/sk26001.png");
 	resourcePreLoader.AddImage("img/sk26002.png");resourcePreLoader.AddImage("img/sk26003.png");
 };
 
@@ -111,6 +161,37 @@ Resource.prototype.AddSound = function(){
 	
 	//soundSystem.AddSound();
 	//soundSystem.isLoadComplete = true;
-	soundSystem.AddSound("sound/ElegantSummer.wav",1);
+	soundSystem.AddSound("sound/ElegantSummer.wav",1,0.5);
 	soundSystem.AddSound("sound/logo.wav",1);
+	
+	soundSystem.AddSound("sound/Akiha.snd_000056.wav",5);
+//	soundSystem.AddSound("sound/Akiha.snd_000057.wav",5);
+//	soundSystem.AddSound("sound/Akiha.snd_000058.wav",5);
+//	soundSystem.AddSound("sound/Akiha.snd_000059.wav",5);
+	soundSystem.AddSound("sound/Akiha.snd_000151.wav",5);
+	
+	soundSystem.AddSound("sound/Akiha.attack1.wav",5);
+	soundSystem.AddSound("sound/Akiha.attack2.wav",5);
+//	soundSystem.AddSound("sound/Akiha.attack3.wav",5);
+//	soundSystem.AddSound("sound/Akiha.attack4.wav",5);
+//	soundSystem.AddSound("sound/Akiha.attack5.wav",5);
+//	soundSystem.AddSound("sound/Akiha.attack6.wav",5);
+//	soundSystem.AddSound("sound/Akiha.attack7.wav",5);
+//	soundSystem.AddSound("sound/Akiha.attack8.wav",5);
+//	soundSystem.AddSound("sound/Akiha.attack9.wav",5);
+//	soundSystem.AddSound("sound/Akiha.attack10.wav",5);
+
+	soundSystem.AddSound("sound/Akiha.snd_000011.wav",1,0.5);
+//	soundSystem.AddSound("sound/Akiha.snd_000034.wav",1,0.5);
+
+	soundSystem.AddSound("sound/Akiha.jump1.wav",1,0.5);
+	soundSystem.AddSound("sound/Akiha.jump2.wav",1,0.5);
+	
+//	soundSystem.AddSound("sound/Akiha.snd_000022.wav",1,0.5);
+//	soundSystem.AddSound("sound/Akiha.snd_000115.wav",1,0.5);
+	soundSystem.AddSound("sound/Akiha.snd_000116.wav",1,0.5);
+	soundSystem.AddSound("sound/Akiha.snd_000117.wav",1,0.5);
+	
+	soundSystem.AddSound("sound/ski.hit.wav",5,0.5);
+	soundSystem.AddSound("sound/ski.atk.wav",5,0.5);
 };

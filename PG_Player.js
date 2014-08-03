@@ -1,6 +1,8 @@
 function PGPlayer(){
 
-	// 0 = stop / 1 = walk / 2 = dash / 3 = jump / 4 = Movingjump / 5 = attack
+	// 00 = stop / 26 = walk / 13 = dash / 17 = jump / 15 = Movingjump / 01 = attack / 피격 = 21 / 40 = 발공격
+	// 47 = 앉아공격  / 23 = 앉아피격 / down = 28
+	// 93 = 대기 / 91 = 대기2
 	this.idle = 0;	
 	// 0 = left 1 = right
 	this.position = 1;
@@ -8,6 +10,8 @@ function PGPlayer(){
 	this.isDashing = false;
 	this.isAttack = false;
 	this.isJump = false;
+	this.isWait = false;
+	
 	this.JumpHeight;
 	this.JumpSpeed = 12.0;
 	this.gravity = 6.0;
@@ -36,13 +40,18 @@ function PGPlayer(){
 	this.CollisitionBox_17 = new Array();
 	this.CollisitionBox_26 = new Array();
 	this.CollisitionBox_15 = new Array();
+	this.CollisitionBox_40 = new Array();
+	this.CollisitionBox_28 = new Array();
+	this.CollisitionBox_47 = new Array();
+	this.CollisitionBox_23 = new Array();
+	this.CollisitionBox_93 = new Array();
 	this.makeCollisition();
 	
 	this.Invalid(0);
 	
-	this.interval = 500;
-	this.inputFrameSkipper = new FrameSkipper(this.interval);
-	
+	this.inputFrameSkipper = new FrameSkipper(500);
+	this.stopTime = new FrameSkipper(8000);
+	this.stopCount = 0;
 }
 PGPlayer.prototype.setPosition = function(x,y){
 	this.x = x;
@@ -103,7 +112,6 @@ PGPlayer.prototype.makeCollisition = function(){
 	this.CollisitionBox_17.push(makeBox("118,126,22,44,/113,173,31,42,/"));this.CollisitionBox_17.push(makeBox("116,124,26,50,/106,176,41,40,/"));
 	this.CollisitionBox_17.push(makeBox("113,122,27,47,/107,177,39,39,/"));this.CollisitionBox_17.push(makeBox("117,119,23,46,/105,169,42,48,/"));
 
-//	this.CollisitionBox_26.push(makeBox("117,120,24,45,/104,168,44,50,/")); //0
 	this.CollisitionBox_26.push(makeBox("120,121,18,41,/104,173,44,44,/"));
 	this.CollisitionBox_26.push(makeBox("118,116,20,46,/107,173,42,44,/"));this.CollisitionBox_26.push(makeBox("114,122,23,40,/108,173,39,44,/"));
 	this.CollisitionBox_26.push(makeBox("116,123,23,41,/100,173,58,44,/"));this.CollisitionBox_26.push(makeBox("114,124,25,39,/98,173,59,44,/"));
@@ -124,6 +132,38 @@ PGPlayer.prototype.makeCollisition = function(){
 	this.CollisitionBox_15.push(makeBox("117,143,36,29,/113,175,34,39,/"));this.CollisitionBox_15.push(makeBox("118,153,34,26,/113,163,33,54,/"));
 	this.CollisitionBox_15.push(makeBox("114,159,38,23,/107,163,42,54,/"));this.CollisitionBox_15.push(makeBox("113,131,33,35,/109,163,28,54,/"));
 	this.CollisitionBox_15.push(makeBox("118,123,25,43,/114,163,22,54,/"));this.CollisitionBox_15.push(makeBox("119,121,22,39,/116,163,23,54,/")); //217
+	
+	this.CollisitionBox_40.push(makeBox("117,115,30,53,/125,197,22,20,/149,162,12,23,"));this.CollisitionBox_40.push(makeBox("122,118,20,36,/118,197,24,20,/152,153,15,32,"));
+	this.CollisitionBox_40.push(makeBox("119,117,20,37,/120,197,19,20,/154,146,20,29,"));this.CollisitionBox_40.push(makeBox("121,115,22,37,/116,197,21,20,/149,140,24,28,"));
+	this.CollisitionBox_40.push(makeBox("123,123,25,37,/120,197,25,20,/163,153,37,25,"));this.CollisitionBox_40.push(makeBox("128,124,26,42,/123,197,21,20,/170,155,37,26,"));
+	this.CollisitionBox_40.push(makeBox("123,121,36,49,/120,197,29,20,/181,156,28,27,"));this.CollisitionBox_40.push(makeBox("126,133,31,40,/123,197,25,20,/176,162,24,34,"));
+	this.CollisitionBox_40.push(makeBox("125,121,30,50,/117,197,25,20,/165,186,17,26,"));this.CollisitionBox_40.push(makeBox("121,118,27,51,/118,197,41,20,/143,192,22,22,"));
+	this.CollisitionBox_40.push(makeBox("114,120,36,53,/126,197,19,20,/135,199,8,18,"));
+	
+	this.CollisitionBox_28.push(makeBox("121,131,22,39,/113,197,26,20,/"));this.CollisitionBox_28.push(makeBox("118,136,28,44,/107,197,38,20,/"));
+	this.CollisitionBox_28.push(makeBox("112,152,36,42,/105,197,43,20,/"));this.CollisitionBox_28.push(makeBox("123,160,23,30,/108,197,43,20,/"));
+	this.CollisitionBox_28.push(makeBox("118,164,28,38,/107,197,38,20,/"));this.CollisitionBox_28.push(makeBox("114,162,31,30,/107,197,44,20,/"));
+	this.CollisitionBox_28.push(makeBox("115,164,30,31,/105,197,43,20,/"));this.CollisitionBox_28.push(makeBox("119,161,26,33,/105,197,45,20,/"));
+	this.CollisitionBox_28.push(makeBox("119,151,34,39,/110,197,41,20,/"));this.CollisitionBox_28.push(makeBox("116,139,38,44,/109,197,40,20,/"));
+	this.CollisitionBox_28.push(makeBox("117,127,29,50,/108,197,36,20,/"));this.CollisitionBox_28.push(makeBox("115,122,34,45,/104,197,43,20,/"));
+	this.CollisitionBox_28.push(makeBox("118,124,29,42,/116,197,27,20,/"));this.CollisitionBox_28.push(makeBox("113,122,31,43,/116,197,25,20,/"));
+	
+	this.CollisitionBox_47.push(makeBox("108,166,32,30,/103,204,48,13,/144,176,13,16,"));this.CollisitionBox_47.push(makeBox("105,158,25,39,/104,204,41,13,/131,167,37,27,"));
+	this.CollisitionBox_47.push(makeBox("108,163,23,34,/103,204,40,13,/132,169,36,21,"));this.CollisitionBox_47.push(makeBox("112,160,27,36,/99,204,48,13,/136,179,14,27,"));
+	this.CollisitionBox_47.push(makeBox("106,163,39,36,/106,204,45,13,/141,190,12,20,"));
+	
+	this.CollisitionBox_23.push(makeBox("107,164,28,30,/97,200,56,17,/"));this.CollisitionBox_23.push(makeBox("91,163,40,32,/101,200,47,17,/"));
+	this.CollisitionBox_23.push(makeBox("87,166,37,34,/100,200,50,17,/"));this.CollisitionBox_23.push(makeBox("84,164,41,34,/99,200,55,17,/"));
+	this.CollisitionBox_23.push(makeBox("101,158,25,43,/98,200,50,17,/"));this.CollisitionBox_23.push(makeBox("107,161,27,40,/100,200,46,17,/"));
+	this.CollisitionBox_23.push(makeBox("104,164,34,38,/103,200,44,17,/"));
+	
+	this.CollisitionBox_93.push(makeBox("116,120,24,42,/101,165,45,52,/"));this.CollisitionBox_93.push(makeBox("115,120,27,43,/102,165,46,52,/"));
+	this.CollisitionBox_93.push(makeBox("116,120,24,42,/101,165,45,52,/"));this.CollisitionBox_93.push(makeBox("115,120,27,43,/102,165,46,52,/"));
+	this.CollisitionBox_93.push(makeBox("116,120,24,42,/101,165,45,52,/"));this.CollisitionBox_93.push(makeBox("115,120,27,43,/102,165,46,52,/"));
+	this.CollisitionBox_93.push(makeBox("116,120,24,42,/101,165,45,52,/"));this.CollisitionBox_93.push(makeBox("115,120,27,43,/102,165,46,52,/"));
+	this.CollisitionBox_93.push(makeBox("116,120,24,42,/101,165,45,52,/"));this.CollisitionBox_93.push(makeBox("115,120,27,43,/102,165,46,52,/"));
+	this.CollisitionBox_93.push(makeBox("116,120,24,42,/101,165,45,52,/"));this.CollisitionBox_93.push(makeBox("115,120,27,43,/102,165,46,52,/"));
+	this.CollisitionBox_93.push(makeBox("116,120,24,42,/101,165,45,52,/"));this.CollisitionBox_93.push(makeBox("115,120,27,43,/102,165,46,52,/"));
 };
 
 PGPlayer.prototype.Render = function(){
@@ -140,6 +180,33 @@ PGPlayer.prototype.Update = function(crashDirection){
 	var isLand = crashDirection.bottom;
 	this.idle = 0;
 
+	if(this.preidle == 0 && this.idle == 0)
+	{
+		if(!this.isWait)
+			this.stopTime.ReSet();
+		this.isWait = true;
+	}
+	else
+		this.isWait = false;
+		
+	if(this.isWait && this.stopTime.isWork())
+	{
+		if(this.stopCount)
+		{
+			this.sprplayer.ChangeImage(93,14,9);
+			this.sprplayer.ChangeForward(this.position);		
+			this.idle = 93;
+			this.Invalid(0);this.EffectSound();
+		}
+		else
+		{
+			this.sprplayer.ChangeImage(91,6,6);
+			this.sprplayer.ChangeForward(this.position);		
+			this.idle = 91;
+			this.Invalid(0);this.EffectSound();
+		}
+		this.stopCount = !this.stopCount;
+	}	
 	if(this.inputFrameSkipper.isWork())
 	{
 //		this.onEnter = false;
@@ -147,9 +214,9 @@ PGPlayer.prototype.Update = function(crashDirection){
 		this.isDash.left_toggle = false; this.isDash.right_toggle = false;
 	}
 	
-	if(isLand && (this.preidle == 0 || this.preidle == 1 || this.preidle == 2) )
+	if(isLand && (this.preidle == 0 || this.preidle == 26 || this.preidle == 13 || this.preidle == 28) )
 	{
-		if(inputSystem.isKeyDown(38))//up
+		if(inputSystem.isKeyDown(38) && this.preidle != 28)//up
 		{
 			if(inputSystem.isKeyDown(37) || inputSystem.isKeyDown(39))//MovingJump
 			{
@@ -159,62 +226,53 @@ PGPlayer.prototype.Update = function(crashDirection){
 					this.position = 1;
 	
 				debugSystem.Log("LOG","MovingJump");
-				this.sprplayer.ChangeImage(4,24,24);
+				this.sprplayer.ChangeImage(15,24,24);
 				this.sprplayer.ChangeForward(this.position);
-				this.preidle = 4;this.idle = 4;
+				this.preidle = 15;this.idle = 15;
 				this.isJump = true;
 				this.JumpHeight = this.y - 108 ;
 				this.y -= this.JumpSpeed;
-				this.Invalid(4);
+				this.Invalid(0);this.EffectSound();
 			}
-			else if(this.preidle != 2)
+			else if(this.preidle != 13)
 			{
 				debugSystem.Log("LOG","Jump");
-				this.sprplayer.ChangeImage(3,28,28);
+				this.sprplayer.ChangeImage(17,28,28);
 				this.sprplayer.ChangeForward(this.position);		
-				this.idle = 3;
+				this.idle = 17;
 				this.isJump = true;
 				this.JumpHeight = this.y - 108 ;
 				this.y -= this.JumpSpeed;
-				this.Invalid(3);
+				this.Invalid(0);this.EffectSound();
 			}
 		}
-		else if(inputSystem.isKeyDown(88) && this.preidle != 2)//x : attack
-		{
-			this.idle = 5;
-			this.sprplayer.ChangeImage(5, 6, 12);
-			this.sprplayer.ChangeForward(this.position);
-		
-			this.Invalid(5);
-		}
-//		else if(inputSystem.isKeyDown(90) && !this.onEnter)//z : enter	{this.onEnter = true;			debugSystem.Log("LOG","z : "+this.onEnter);}
-		else if(inputSystem.isKeyDown(37) && this.preidle != 2)//left
+		else if(inputSystem.isKeyDown(37) && this.preidle != 13 && this.preidle != 28)//left
 		{
 			
 			if(this.isDash.left)// dash
 			{
 				this.accelate = 1.5;
-				this.idle = 2;
-				if(this.preidle != 2)
+				this.idle = 13;
+				if(this.preidle != 13)
 				{
-					this.sprplayer.ChangeImage(2,16,16);
+					this.sprplayer.ChangeImage(13,16,16);
 					this.sprplayer.ChangeForward(this.position);
-					this.Invalid(2);
+					this.Invalid(0);this.EffectSound();
 				}
 			}
 			else
 			{
-				this.idle = 1;
+				this.idle = 26;
 				if(this.position == 1)// change
 				{
 					this.position = 0;this.sprplayer.ChangeForward(this.position);
 				}	
 			
-				if(this.preidle != 1)
+				if(this.preidle != 26)
 				{
-					this.sprplayer.ChangeImage(1,12,12);
+					this.sprplayer.ChangeImage(26,12,12);
 					this.sprplayer.ChangeForward(this.position);
-					this.Invalid(1);
+					this.Invalid(0);this.EffectSound();
 				}	
 
 	
@@ -229,32 +287,32 @@ PGPlayer.prototype.Update = function(crashDirection){
 				this.Invalid();
 			}
 		}
-		else if(inputSystem.isKeyDown(39) && this.preidle != 2)//right
+		else if(inputSystem.isKeyDown(39) && this.preidle != 13 && this.preidle != 28)//right
 		{
 			if(this.isDash.right)// dash
 			{
 				this.accelate = 1.5;
-				this.idle = 2;
-				if(this.preidle != 2)
+				this.idle = 13;
+				if(this.preidle != 13)
 				{
-					this.sprplayer.ChangeImage(2,16,16);
+					this.sprplayer.ChangeImage(13,16,16);
 					this.sprplayer.ChangeForward(this.position);
-					this.Invalid(2);
+					this.Invalid(0);this.EffectSound();
 				}
 			}
 			else
 			{
-				this.idle = 1;
+				this.idle = 26;
 				if(this.position == 0)// change
 				{
 					this.position = 1;this.sprplayer.ChangeForward(this.position);
 				}
 			
-				if(this.preidle != 1)
+				if(this.preidle != 26)
 				{
-					this.sprplayer.ChangeImage(1,12,12);
+					this.sprplayer.ChangeImage(26,12,12);
 					this.sprplayer.ChangeForward(this.position);
-					this.Invalid(1);
+					this.Invalid(0);this.EffectSound();
 				}
 
 	
@@ -269,10 +327,26 @@ PGPlayer.prototype.Update = function(crashDirection){
 				this.Invalid();
 			}
 		}
+		else if(inputSystem.isKeyDown(40) && this.preidle != 13)//down
+		{
+			if(!this.sitting)
+			{
+			this.sitting = true;
+			this.idle = 28;
+			this.sprplayer.ChangeImage(28, 14, 28);
+			this.sprplayer.ChangeForward(this.position);
+		
+			this.Invalid(0);this.EffectSound();
+			}
+		}
+		else
+		{
+			this.sitting = false;
+		}
 	}
 	else if(!isLand)
 	{	
-		if(this.preidle == 4)
+		if(this.preidle == 15)
 		{
 			if(this.position == 1)
 			{
@@ -317,9 +391,9 @@ PGPlayer.prototype.Update = function(crashDirection){
 		this.y += this.gravity;this.Invalid();
 	}
 	
-	if (this.preidle == 2)
+	if (this.preidle == 13)
 	{
-		this.idle = 2;
+		this.idle = 13;
 		if(this.position == 1)
 			{
 				if(this.rightBound>this.x)
@@ -343,27 +417,88 @@ PGPlayer.prototype.Update = function(crashDirection){
 				this.Invalid();
 			}
 	}
-	if (this.preidle == 3)this.idle = 3;	
-	if (this.preidle == 4)this.idle = 4;
-	if (this.preidle == 5)this.idle = 5;
+	
+	if(this.sitting && inputSystem.checkKeyDown(88) && this.preidle != 47)//x 앉아공격
+	{
+			this.idle = 47;this.preidle = 47;
+			this.sprplayer.ChangeImage(47, 5, 10);
+			this.sprplayer.ChangeForward(this.position);
 		
+			this.Invalid(0);this.EffectSound();
+	}
+	else if(inputSystem.checkKeyDown(88) && this.preidle != 1)//x : attack
+		{
+			this.idle = 1;this.preidle = 1;
+			this.sprplayer.ChangeImage(1, 6, 12);
+			this.sprplayer.ChangeForward(this.position);
+		
+			this.Invalid(0);this.EffectSound();
+		}
+	else if(inputSystem.checkKeyDown(90) && this.preidle != 40)//z : 발공격
+		{
+			this.idle = 40;this.preidle = 40;
+			this.sprplayer.ChangeImage(40, 11, 22);
+			this.sprplayer.ChangeForward(this.position);
+		
+			this.Invalid(0);this.EffectSound();
+	}
+	
+	if (this.preidle == 17)this.idle = 17;	
+	if (this.preidle == 15)this.idle = 15;
+	if (this.preidle == 1)this.idle = 1;
+	if (this.preidle == 21)this.idle = 21;
+	if (this.preidle == 40)this.idle = 40;
+	if (this.preidle == 28)this.idle = 28;
+	if (this.preidle == 47)this.idle = 47;
+	if (this.preidle == 23)this.idle = 23;
+	if (this.preidle == 93)this.idle = 93;if (this.preidle == 91)this.idle = 91;
+	
 	var info = this.sprplayer.Update();
 	if(info != null){
 		//change collisition
 		this.Invalid(info.current);
 		
-		if(info.isLotate && this.preidle == 5)//attack
-			this.idle = 0;				
-		else if(info.isLotate && this.preidle == 2)//dash
+		if(info.isLotate && this.preidle == 1)//attack
+			this.idle = 0;
+		else if(info.isLotate && (this.preidle == 47 || this.preidle == 23))
+		{
+			this.sitting = true;
+			this.idle = 28;	this.preidle = 28;
+			this.sprplayer.ChangeImage(28, 14, 28);
+			this.sprplayer.ChangeForward(this.position);
+			this.sprplayer.ChangeFrame();
+			this.Invalid(0);
+		}	
+		else if(info.isLotate && this.preidle == 13)//dash
 		{
 			this.accelate = 1;
 			this.idle = 0;	
 		}
-		else if(info.isLotate && this.preidle == 3)//jump
+		else if(info.isLotate && this.preidle == 17)//jump
 			this.idle = 0;
-		else if(info.isLotate && this.preidle == 4)//MovingJump
+		else if(info.isLotate && this.preidle == 15)//MovingJump
 		{
 			this.accelate = 1;
+			this.idle = 0;
+		}
+		else if(info.isLotate && this.preidle == 21)
+		{
+			this.idle = 0;
+		}
+		else if(info.isLotate && this.preidle == 40)
+		{
+			this.idle = 0;
+		}
+		else if(this.preidle == 28 && info.current == 6 && this.sitting)
+		{
+			this.sprplayer.ChangeFrame();
+		}
+		else if(info.isLotate && this.preidle == 28)
+		{
+			this.idle = 0;
+		}
+		else if(info.isLotate && ( this.preidle == 93 || this.preidle == 91 ))
+		{
 			this.idle = 0;
 		}
 	}
@@ -403,12 +538,60 @@ PGPlayer.prototype.Update = function(crashDirection){
 	}
 	
 	//monster process
-	if(info != null && this.preidle == 5)
+	if(info != null && (this.preidle == 1 || this.preidle == 40 || this.preidle == 47))
 	{
 		this.preidle = this.idle;	
 		return info.current;
 	}	
 	this.preidle = this.idle;
+};
+PGPlayer.prototype.Dameged = function()
+{
+	if(this.sitting)
+	{
+		this.idle = 23;this.preidle = 23;
+		this.sprplayer.ChangeImage(23, 7, 21);
+		this.Invalid(0);this.EffectSound();
+	}
+	else
+	{
+		this.idle = 21;this.preidle = 21;
+		this.sprplayer.ChangeImage(21, 7, 21);
+		this.Invalid(0);this.EffectSound();
+	}
+};
+PGPlayer.prototype.EffectSound = function(){
+	switch(this.idle)
+	{
+		case 91:
+			soundSystem.PlaySound("sound/Akiha.snd_000117.wav");
+		break;
+		case 93:
+			soundSystem.PlaySound("sound/Akiha.snd_000116.wav");
+		break;
+		case 1:
+		case 47:
+			soundSystem.PlaySound("sound/Akiha.attack1.wav");
+		break;
+		case 40:
+			soundSystem.PlaySound("sound/Akiha.attack2.wav");
+		break;
+		case 21:
+			soundSystem.PlaySound("sound/Akiha.snd_000056.wav");
+		break;
+		case 23:
+			soundSystem.PlaySound("sound/Akiha.snd_000151.wav");
+		break;
+		case 13:
+			soundSystem.PlaySound("sound/Akiha.snd_000011.wav");
+		break;
+		case 17:
+			soundSystem.PlaySound("sound/Akiha.jump1.wav");
+		break;
+		case 15:
+			soundSystem.PlaySound("sound/Akiha.jump2.wav");
+		break;
+	}
 };
 PGPlayer.prototype.Invalid = function(NumOfcollisition)
 {
@@ -420,22 +603,39 @@ PGPlayer.prototype.Invalid = function(NumOfcollisition)
 		
 		switch(this.idle){
 			case 0: // stop
+			case 91: // 대기2
+			case 21: // 피격
 			CollisitionArray = this.CollisitionBox_00;
-			break;
-			case 1: // walk
+			break;	
+			case 26: // walk
 			CollisitionArray = this.CollisitionBox_26;
 			break;
-			case 2: // dash
+			case 13: // dash
 			CollisitionArray = this.CollisitionBox_13;
 			break;
-			case 3: // jump
+			case 17: // jump
 			CollisitionArray = this.CollisitionBox_17;
 			break;
-			case 4: // Movingjump
+			case 15: // Movingjump
 			CollisitionArray = this.CollisitionBox_15;	
 			break;
-			case 5: // Attack
+			case 1: // Attack
 			CollisitionArray = this.CollisitionBox_01;	
+			break;
+			case 23: // 앉아피격
+			CollisitionArray = this.CollisitionBox_23;
+			break;
+			case 40: //발 공격
+			CollisitionArray = this.CollisitionBox_40;
+			break;
+			case 28: // 앉기
+			CollisitionArray = this.CollisitionBox_28;
+			break;
+			case 47: // 앉아공격
+			CollisitionArray = this.CollisitionBox_47;
+			break;
+			case 93: // 대기
+			CollisitionArray = this.CollisitionBox_93;
 			break;
 		};
 		
