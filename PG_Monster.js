@@ -135,13 +135,16 @@ monster.prototype.Init = function(){
 };
 monster.prototype.Attacked = function(value){
 	var critical = value % 10;
-	
+	soundSystem.PlaySound("sound/ski.hit.wav");
 	if(critical == 0)
 		playGameState.StateLine.PushLine("player attack : "+value/10);
 	else
 		playGameState.StateLine.PushLine("Critical! player attack : "+value/10);
-		
-	this.prograssbar.Set();
+	
+	if(this.prograssbarOn != 0)	
+		this.prograssbar.ReSet();
+	else
+		this.prograssbar.Set();
 	this.prograssbarOn = value;
 	
 	this.life -= value / 10;
@@ -307,6 +310,7 @@ monster.prototype.Update = function(mon_crashDirection,attackNumber){
 		
 				if(this.x == this.f_x)
 					this.Icon.on();
+				
 			}
 			
 			if(this.miss)
@@ -367,6 +371,7 @@ monster.prototype.Update = function(mon_crashDirection,attackNumber){
 
 	if(this.inputFrameSkipper_wait.isWork() || (this.x > this.f_x + this.sea*2 || this.x < this.f_x - this.sea*2))
 	{
+		soundSystem.PlaySound("sound/ski.miss.wav");
 		this.idle = 27;
 		this.position = Math.abs(this.position - 1);
 		this.sprmonster.ChangeForward(this.position);
@@ -388,7 +393,7 @@ monster.prototype.Update = function(mon_crashDirection,attackNumber){
 //			console.log(info.current);
 		
 		if(info.current == 1)
-			soundSystem.PlaySound("sound/ski.hit.wav");
+			soundSystem.PlaySound("sound/ski.atk.wav");
 		else if(info.current == 2)
 		{
 			this.damaging = true;
@@ -396,7 +401,6 @@ monster.prototype.Update = function(mon_crashDirection,attackNumber){
 		
 		if(this.damaging && ISIntersectRect(this.AttackCollisitionBox[0] , player_UpCollisitionBox[0]))
 		{
-			soundSystem.PlaySound("sound/ski.atk.wav");
 			Status.Attacked(this.Damage);
 			playGameState.player.Dameged();
 			this.damaging = false;
@@ -485,4 +489,4 @@ icon.prototype.Render = function(Context,x,y){
 		Context.restore();
 	}
 };
-icon.prototype.on = function(){this.plag = true;};
+icon.prototype.on = function(){this.plag = true;soundSystem.PlaySound("sound/ski.see.wav");};

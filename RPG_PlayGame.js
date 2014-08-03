@@ -17,7 +17,7 @@ function PlayGameState(stage)
 	Item = new PGItem();
 	Status = new PGStatus(1, 100);
 	
-//	this.chat1 = new PG_chating("f_akiha","아키하","Test..../엔터작동확인/대화..   동해물과백두산이마르고닳도록");
+	this.ChatBoxs = new ChatBoxs();
 	
 	this.isGameStop = false;
 	this.InMenuState = false;
@@ -71,7 +71,6 @@ function PlayGameState(stage)
 PlayGameState.prototype.Init = function()
 {
 	soundSystem.PlayBackgroundMusic("sound/ElegantSummer.wav");
-//	this.StateLine.PushLine("hello");
 };
 PlayGameState.prototype.Render = function()
 {
@@ -87,15 +86,14 @@ PlayGameState.prototype.Render = function()
 	}
 	Status.Render();
 	this.StateLine.Render();
-	
-//	this.chat1.Render();
+	this.ChatBoxs.Render();
 	
 	//text filed x : 0 ~ 800 / y : 0 ~ 130
 	Context.fillStyle = "#ffffff";
 	Context.font = '28px Arial';
 	Context.textBaseline = "top";
 
-	if(this.isGameStop){
+	if(this.MenuOn){
 		this.Menu.Render(Context);
 	}
 };
@@ -115,13 +113,17 @@ PlayGameState.prototype.Update = function()
 	}
 	else // menu
 	{
-		this.Menu.Update();
+		this.ChatBoxs.Update();
+		if(this.ChatBoxs.current == -1)
+			this.Menu.Update();
 	}
 	
-	if(inputSystem.checkKeyDown(13))//enter
+	if(this.ChatBoxs.current == -1 && inputSystem.checkKeyDown(13) )//enter
 	{
 		debugSystem.Log("LOG","ENTER");
 		this.isGameStop =true;
+		this.MenuOn = true;
+		soundSystem.PlaySound("sound/menu.select.wav");
 	}	
 	
 };
@@ -134,7 +136,7 @@ PlayGameState.prototype.Notification = function(msg,value)
 //			return this.player.onEnter;
 //		break;
 		case "GOGAME":
-			this.isGameStop = false;
+			this.isGameStop = false;this.MenuOn = false;
 		break;
 		case "GET_STAGE":
 			return this.stage;
@@ -145,8 +147,8 @@ PlayGameState.prototype.Notification = function(msg,value)
 			this.background.ChangeBG(backgroundImg);
 			this.player.setPosition(value.x,value.y);// init player
 		break;
-		case "MAKEGATE":
-			this.Object.makeObject("gate",value);
+		case "MAKEOBJECT":
+			this.Object.makeObject(value);
 		break;
 		case "TIME_OVER":
 			soundSystem.StopBackgroundMusic();
@@ -155,6 +157,10 @@ PlayGameState.prototype.Notification = function(msg,value)
 		break;
 		case "DELETE_MONSTER":
 			this.monster.DelMonster(value);
+		break;
+		case "DIALOG":
+			console.log("stop");
+			this.ChatBoxs.Event("on",value);
 		break;
 		case "GOAL":
 			soundSystem.StopBackgroundMusic();

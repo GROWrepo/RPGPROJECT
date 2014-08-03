@@ -194,4 +194,7 @@ Resource.prototype.AddSound = function(){
 	
 	soundSystem.AddSound("sound/ski.hit.wav",5,0.5);
 	soundSystem.AddSound("sound/ski.atk.wav",5,0.5);
+	soundSystem.AddSound("sound/ski.see.wav",1,0.5);
+	soundSystem.AddSound("sound/ski.miss.wav",1,0.5);
+	soundSystem.AddSound("sound/menu.select.wav",2,0.5);
 };

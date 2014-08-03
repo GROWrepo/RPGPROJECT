@@ -381,7 +381,7 @@ PGMenu.prototype.Update = function(){
 		else if(inputSystem.checkKeyDown(13))//enter
 		{
 			this.leftOn = true;//test
-			this.Init();
+			this.Init();soundSystem.PlaySound("sound/menu.select.wav");
 		}
 		else if(inputSystem.checkKeyDown(90))//z , cancle
 		{
@@ -601,7 +601,8 @@ OKBox.prototype.Update = function(){
 		}
 	else if(inputSystem.checkKeyDown(13))//enter
 		{
+			var value = this.type;
 			this.type = true;
-			return this.type;
+			return value;
 		}
 };

@@ -1,16 +1,21 @@
 function PGObject(){
 	
 	this.gate = new Array();
+	this.dialog = new Array();
 	
 }
 PGObject.prototype.reset = function(){
 	this.gate = new Array();
+	this.dialog = new Array();
 };
-PGObject.prototype.makeObject = function(type, _obj){
+PGObject.prototype.makeObject = function(_obj){
 	
-	switch(type){
+	switch(_obj.name){
 		case "gate":
 			this.gate.push(_obj);
+		break;
+		case "dialog":
+			this.dialog.push(_obj);
 		break;
 	};
 };
@@ -24,6 +29,7 @@ PGObject.prototype.Update = function(){
 //	{
 		var player = playGameState.GetPlayerUpCollsionBox();
 		var Type = "no";
+		var _Type;
 		
 		for(var j = 0; j < player.length; j++)
 		{
@@ -32,11 +38,35 @@ PGObject.prototype.Update = function(){
 			{
 				var isCrash = ISIntersectRect(player[j],this.gate[i]);
 				if(isCrash)// event
-					Type = this.gate[i].type;
+				{
+					_Type = this.gate[i].type;
+					Type = "gate";
+				}
+			}
+
+			for(var i = 0; i < this.dialog.length; i++)
+			{
+				if(!this.dialog[i].isOn){
+				var isCrash = ISIntersectRect(player[j],this.dialog[i]);
+				if(isCrash)// event
+				{
+					this.dialog[i].isOn = true;
+					_Type = this.dialog[i].num;
+					Type = "dialog";
+				}
+				}
 			}
 		}
 		if(Type != "no")
-			this.getNextMapData(Type);
+		switch(Type){
+			case "gate":
+				this.getNextMapData(_Type);
+			break;
+			case "dialog":
+				playGameState.Notification("DIALOG",_Type);
+			break;
+		};
+			
 //	}
 };
 
