@@ -1,32 +1,29 @@
 var playGameState;
 var Status;
 var Item;
-function PlayGameState(stage)
-{
-	this.stage = 1;
-	
+var time;
+function PlayGameState(name)
+{	
+	this.StageInfomation;
 	this.GAME_SPEED = 1.5;
 	
 	this.background = new PGbackground();
 	this.player = new PGPlayer();
 	this.monster = new PGMonster();
-	this.Map = new MapTile(this.stage);
 	this.Object = new PGObject();
+	this.Map = new MapTile();
 	this.Menu = new PGMenu();
 	this.StateLine = new RPG_StateLine();
-	Item = new PGItem();
-	Status = new PGStatus(1, 100);
 	
 	this.ChatBoxs = new ChatBoxs();
 	
 	this.isGameStop = false;
 	this.InMenuState = false;
-	this.time = new Timer();
+	this.InChatState = false;
 	
 	playGameState = this;
 	
-	this.Map.SetStage(this.stage);
-
+	this.Map.LoadStage(name,0);
 /*	
 	gfwSocket.On("control_in_game",function(msg)
 	{
@@ -70,7 +67,7 @@ function PlayGameState(stage)
 
 PlayGameState.prototype.Init = function()
 {
-	soundSystem.PlayBackgroundMusic("sound/ElegantSummer.wav");
+	soundSystem.PlayBackgroundMusic("sound/bgm_darkcave.mp3");
 };
 PlayGameState.prototype.Render = function()
 {
@@ -93,9 +90,9 @@ PlayGameState.prototype.Render = function()
 	Context.font = '28px Arial';
 	Context.textBaseline = "top";
 
-	if(this.MenuOn){
-		this.Menu.Render(Context);
-	}
+	if(this.MenuOn)
+		this.Menu.Render();
+	
 };
 PlayGameState.prototype.Update = function()
 {
@@ -113,14 +110,15 @@ PlayGameState.prototype.Update = function()
 	}
 	else // menu
 	{
-		this.ChatBoxs.Update();
-		if(this.ChatBoxs.current == -1)
+		if(this.InChatState)
+			this.ChatBoxs.Update();
+		
+		if(this.MenuOn)
 			this.Menu.Update();
 	}
 	
-	if(this.ChatBoxs.current == -1 && inputSystem.checkKeyDown(13) )//enter
+	if(!this.InChatState && inputSystem.checkKeyDown(13) )//enter
 	{
-		debugSystem.Log("LOG","ENTER");
 		this.isGameStop =true;
 		this.MenuOn = true;
 		soundSystem.PlaySound("sound/menu.select.wav");
@@ -132,40 +130,28 @@ PlayGameState.prototype.Notification = function(msg,value)
 	
 	switch(msg)
 	{
-//		case "GET_ONENTER":
-//			return this.player.onEnter;
-//		break;
+		case "GOVILLIAGE":
+			soundSystem.StopBackgroundMusic();
+			ChangeGameState(new TransitionFadeOut (this, new VilliageState() ,6.0));
+		break;
 		case "GOGAME":
 			this.isGameStop = false;this.MenuOn = false;
 		break;
-		case "GET_STAGE":
-			return this.stage;
+		case "SET_STAGE":
+			this.StageInfomation = {name:this.Map.Name,stage:this.Map.Stage,x:this.player.x,y:this.player.y};
+		break;
 		case "CHANGE_MAP":
-			this.stage = value.stage;
-			this.Object.reset();
-			var backgroundImg = this.Map.SetStage(this.stage);
-			this.background.ChangeBG(backgroundImg);
+			this.Map.LoadStage(value.name,value.stage);
 			this.player.setPosition(value.x,value.y);// init player
 		break;
 		case "MAKEOBJECT":
 			this.Object.makeObject(value);
 		break;
-		case "TIME_OVER":
-			soundSystem.StopBackgroundMusic();
-			soundSystem.PlaySound("sound/game_bgm_lose.ogg");
-			ChangeGameState(new TransitionFadeOut(this,new TitleState,1.8));
-		break;
 		case "DELETE_MONSTER":
 			this.monster.DelMonster(value);
 		break;
 		case "DIALOG":
-			console.log("stop");
 			this.ChatBoxs.Event("on",value);
-		break;
-		case "GOAL":
-			soundSystem.StopBackgroundMusic();
-			soundSystem.PlaySound("sound/game_bgm_win.ogg");
-			ChangeGameState(new TransitionFadeOut(this,new CreditState,1.6));
 		break;
 	};
 	

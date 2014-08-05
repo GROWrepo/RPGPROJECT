@@ -4,6 +4,7 @@ function PGStatus(level,maxhp){
 	this.Level = level;
 	this.MaxHP = maxhp;
 	this.HP = this.MaxHP;
+	this.dounsion =[1,0,0,0,0,0];
 	
 	this.Ability = {bonus:10,str:30,dex:30,Attack:30,Defense:10};
 	
@@ -36,6 +37,41 @@ function PGStatus(level,maxhp){
 	
 	Status = this;
 }
+PGStatus.prototype.SetStatus = function(){
+	var _dounsion ="";
+	for(var i = 0; i < this.dounsion.length;i++)
+		_dounsion += this.dounsion[i];
+		
+	return ""+this.Name+"/"+this.Level+"/"+this.MaxHP+"/"+this.HP+"/"+_dounsion+"/"+this.Ability.bonus+"/"+this.Ability.str+"/"+this.Ability.dex+"/"+this.Ability.Attack+"/"+this.Ability.Defense
+	+"/"+this.gold+"/"+this.Exp+"/"+this.NextExp+"/"+this.equipment[0]+"/"+this.equipment[1]+"/"+this.equipment[2]+"/"+this.equipment[3]+"/"+this.equipment[4]+"/"+this.inventory.SetInventory();
+};
+PGStatus.prototype.GetStatus = function(Data){
+	var strArray = Data.split("/");
+	this.Name = strArray[0];
+	this.Level = parseInt(strArray[1]);
+	this.MaxHP = parseInt(strArray[2]);
+	this.HP = parseInt(strArray[3]);
+	
+	var _dounsion = strArray[4];
+	for(var i = 0; i < this.dounsion.length;i++)
+		this.dounsion[i] = _dounsion[i];
+	
+	this.Ability.bonus = parseInt(strArray[5]);
+	this.Ability.str = parseInt(strArray[6]);
+	this.Ability.dex = parseInt(strArray[7]);
+	this.Ability.Attack = parseInt(strArray[8]);
+	this.Ability.Defense = parseInt(strArray[9]);
+	
+	this.gold = parseInt(strArray[10]);
+	this.Exp = parseInt(strArray[11]);
+	this.NextExp = parseInt(strArray[12]);
+	this.equipment[0] = strArray[13];
+	this.equipment[1] = strArray[14];
+	this.equipment[2] = strArray[15];
+	this.equipment[3] = strArray[16];
+	this.equipment[4] = strArray[17];
+	this.inventory.GetInventory(strArray[18]);
+};
 PGStatus.prototype.SetEquipment = function(inout,type,name){
 	if(inout == "in")//in
 	{
@@ -75,6 +111,24 @@ PGStatus.prototype.SetEquipment = function(inout,type,name){
 };
 PGStatus.prototype.GETStatus = function(){
 //	return {level:this.Level,maxhp : this.MaxHP,hp:this.HP,ability:this.Ability,attack:this.Attack,defense:this.Defense,gold:this.gold,exp:this.Exp,nextexp:this.NextExp};
+};
+PGStatus.prototype.Gold = function(type,value){
+	if(type == "push")
+	{
+		this.gold += value;
+		return true;
+	}
+	else if(type == "pop")
+	{
+		if(this.gold-value<0)
+			return false;
+		else
+		{
+			this.gold -= value;
+			return true;
+		}
+	}
+	
 };
 PGStatus.prototype.GetExp = function(value){
 	
@@ -207,6 +261,61 @@ function Inventory(){
 	this.i_shoes = new Array();
 	this.i_potion = new Array();
 }
+Inventory.prototype.SetInventory = function(){
+	var str = "";
+	
+	str += "-";
+	for(var i = 0 ; i < this.i_weaphon.length; i++)
+		str += this.i_weaphon[i].name+","+this.i_weaphon[i].num+"*";
+	str += "-";
+	for(var i = 0 ; i < this.i_armer.length; i++)
+		str += this.i_armer[i].name+","+this.i_armer[i].num+"*";
+	str += "-";
+	for(var i = 0 ; i < this.i_neckless.length; i++)
+		str += this.i_neckless[i].name+","+this.i_neckless[i].num+"*";
+	str += "-";
+	for(var i = 0 ; i < this.i_ring.length; i++)
+		str += this.i_ring[i].name+","+this.i_ring[i].num+"*";
+	str += "-";
+	for(var i = 0 ; i < this.i_shoes.length; i++)
+		str += this.i_shoes[i].name+","+this.i_shoes[i].num+"*";
+	str += "-";
+	for(var i = 0 ; i < this.i_potion.length; i++)
+		str += this.i_potion[i].name+","+this.i_potion[i].num+"*";
+	str += "-";
+	
+	return str;
+};
+Inventory.prototype.GetInventory = function(Data){
+	
+	var kind = Data.split("-");
+	
+	var _weaphone = kind[0].split("*");
+	var _armer= kind[1].split("*");
+	var _neckless= kind[2].split("*");
+	var _ring= kind[3].split("*");
+	var _shoes= kind[4].split("*");
+	var _potion= kind[5].split("*");
+	
+	for(var i = 0 ; i < _weaphone.length; i++)
+	{var item = _weaphone[i].split(",");var num = parseInt(item[1]);	
+	while(num--)this.setItem(0,item[0]);}
+	for(var i = 0 ; i < _armer.length; i++)
+	{var item = _armer[i].split(",");var num = parseInt(item[1]);	
+	while(num--)this.setItem(1,item[0]);}
+	for(var i = 0 ; i < _neckless.length; i++)
+	{var item = _neckless[i].split(",");var num = parseInt(item[1]);	
+	while(num--)this.setItem(2,item[0]);}
+	for(var i = 0 ; i < _ring.length; i++)
+	{var item = _ring[i].split(",");var num = parseInt(item[1]);	
+	while(num--)this.setItem(3,item[0]);}
+	for(var i = 0 ; i < _shoes.length; i++)
+	{var item = _shoes[i].split(",");var num = parseInt(item[1]);	
+	while(num--)this.setItem(4,item[0]);}
+	for(var i = 0 ; i < _potion.length; i++)
+	{var item = _potion[i].split(",");var num = parseInt(item[1]);	
+	while(num--)this.setItem(5,item[0]);}	
+};
 Inventory.prototype.setItem = function(type,name){
 	
 	switch(type){

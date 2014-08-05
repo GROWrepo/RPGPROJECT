@@ -216,7 +216,7 @@ PGPlayer.prototype.Update = function(crashDirection){
 	
 	if(isLand && (this.preidle == 0 || this.preidle == 26 || this.preidle == 13 || this.preidle == 28) )
 	{
-		if(inputSystem.isKeyDown(38) && this.preidle != 28)//up
+		if(inputSystem.isKeyDown(67) && this.preidle != 28)//c
 		{
 			if(inputSystem.isKeyDown(37) || inputSystem.isKeyDown(39))//MovingJump
 			{

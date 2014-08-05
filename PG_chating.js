@@ -6,7 +6,7 @@ function ChatBoxs(){
 }
 ChatBoxs.prototype.AddDialog = function(){
 	this.Storys.push(new PG_chating(50,"f_akiha","아키하","Test..../엔터작동확인/대화..   동해물과백두산이마르고닳도록"));
-	this.Storys.push(new PG_chating(50,"f_akiha","아키하","Test2..../엔터작동확인/aaa"));
+	this.Storys.push(new PG_chating(40,"f_akiha","호랑이","Test2..../aaa"));
 };
 ChatBoxs.prototype.Render = function(){
 	if(this.current != -1 && this.Storys[this.current] != null)
@@ -20,20 +20,20 @@ ChatBoxs.prototype.Update = function(){
 	}
 	else
 	{	
-		playGameState.isGameStop = false;this.current = -1;
+		playGameState.isGameStop = false;playGameState.InChatState = false;this.current = -1;
 	}
 };
 ChatBoxs.prototype.Event = function(state,NofStroy){
 	if(state == "on")
 	{
 		this.current = NofStroy;
-		playGameState.isGameStop = true;
+		playGameState.isGameStop = true;playGameState.InChatState = true;
 	}
 	else if(state == "off")
 	{
 		this.Storys[this.current] = null;
 		this.current = -1;
-		playGameState.isGameStop = false;
+		playGameState.isGameStop = false;playGameState.InChatState = false;
 	}
 };
 function PG_chating(Speed,face,name,str){
@@ -56,11 +56,9 @@ function PG_chating(Speed,face,name,str){
 	this.nowrow = 0;
 	this.firststr = 0;
 	this.temporarydata;
-	
-	
+
 	this.last = false;
 }
-
 PG_chating.prototype.Render = function(){
 	this.chatbox.Render();
 	this.chat[this.nowrow].Counting();
@@ -70,6 +68,7 @@ PG_chating.prototype.Render = function(){
 	Context.fillStyle = "#ffffff";
 	Context.font = '28px Arial';
 	Context.fillText(this.name,100,515);
+	
 	if(this.chat[this.nowrow].nowPrint == "/"){
 		this.temporarydata = this.chat[this.nowrow].NumofPrint;
 		this.chat[this.nowrow] = new chat(this.str.substr(this.firststr,this.temporarydata-1),this.Speed);
@@ -79,19 +78,20 @@ PG_chating.prototype.Render = function(){
 		this.row++;
 		this.chat.push(new chat(this.str.substr(this.firststr,30),this.Speed));
 	}
+	
 	if(this.row == this.nowrow)
 	{
-		Context.fillText(this.chat[this.nowrow].getString(),75,570+this.nowrow*30);this.last = true;
+		Context.fillText(this.chat[this.nowrow].getString(),75,570+this.nowrow*30);console.log("1");this.last = true;
 	}
 	else {
 		if(this.chat[this.nowrow].NumofPrint > this.chat[this.nowrow].str.length){
 			this.firststr +=30;
 			this.nowrow++;
-			this.chat.push(new chat(this.str.substr(this.firststr,30),this.Speed));
+			this.chat.push(new chat(this.str.substr(this.firststr,30),this.Speed));console.log("2");
 		}
 		else
 		{
-			Context.fillText(this.chat[this.nowrow].getString(),75,570+this.nowrow*30);
+			Context.fillText(this.chat[this.nowrow].getString(),75,570+this.nowrow*30);console.log("3");
 				
 		}
 		
@@ -111,8 +111,10 @@ PG_chating.prototype.Render = function(){
 };
 PG_chating.prototype.Update = function(){
 
-	if(this.last && inputSystem.checkKeyDown(13))//enter
+	if(this.last && inputSystem.checkKeyDown(90))//z
+	{	this.ReSet();
 		playGameState.ChatBoxs.Event("off");
+	}
 	
 };
 PG_chating.prototype.Reset = function(){// 이건 상점 등 같은 대화를 여러번 해야할 때 리셋 기능

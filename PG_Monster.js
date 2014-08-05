@@ -4,10 +4,12 @@ function PGMonster(){
 	
 	this.GetMonster();
 }
-PGMonster.prototype.GetMonster = function(){
+PGMonster.prototype.GetMonster = function(Monster){
 	//test
-	this.monsterArray.push(new monster("sk",400,720-256-14));
-	this.monsterArray.push(new monster("test",900,720-256-14));
+	if(Monster == null)
+		this.monsterArray = new Array();
+	else
+		this.monsterArray = Monster;
 };
 PGMonster.prototype.DelMonster = function(index){
 	this.monsterArray.splice(index,1);

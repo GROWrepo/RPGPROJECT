@@ -26,6 +26,5 @@ LogoState.prototype.Render = function(){
 	
 };
 LogoState.prototype.Update = function(){
-	
-	ChangeGameState(new TransitionFadeIn (this, new TransitionFadeOut(this,new PlayGameState,6.0),6.0));
+		ChangeGameState(new TransitionFadeIn (this, new TransitionFadeOut(this,new TitleState,5.0),5.0));
 };

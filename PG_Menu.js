@@ -1,4 +1,4 @@
-function PGMenu(){
+function PGMenu(isvillage){
 
 	this.leftMenu = 1;
 	this.leftOn = false;
@@ -21,6 +21,12 @@ function PGMenu(){
 	this.RightPage = 0;
 	
 	this.leftImage = new Array();
+	this.map = null;
+	
+	if(isvillage == undefined)
+		this.isvillage = false;
+	else
+		this.isvillage = isvillage;
 }
 PGMenu.prototype.Init = function(){
 	
@@ -52,15 +58,25 @@ PGMenu.prototype.Init = function(){
 		case 3: //Map
 		break;
 		case 4: //Save
-			this.leftValue = {time :playGameState.time.GetTime(),location : "1F" };
+			if(!this.isvillage)
+			{
+				var information = playGameState.StageInfomation;
+				this.leftValue = {time :time.GetTime(),name : information.name,stage:information.stage,x:information.x,y:information.y};
+			}
+			else
+			{
+				this.leftValue = {time :time.GetTime(),name : "village",stage:"villiage",x:"?",y:"?"};
+			}
 		break;
 		case 5: //Quit
 		break;
 	};
 	}
 };
-PGMenu.prototype.Render = function(Context){
-
+PGMenu.prototype.Render = function(){
+	var theCanvas = document.getElementById("GameCanvas");
+	var Context = theCanvas.getContext("2d");
+	
 	var xIndex = 50;
 	var yIndex = 100;
 	var _x = this.x + 5;
@@ -115,7 +131,8 @@ PGMenu.prototype.Render = function(Context){
 			case 1: //status
 				var yIndex = 50;
 				var xIndex = 100;
-				playGameState.InMenuState = true;
+				if(!this.isvillage)
+					playGameState.InMenuState = true;
 				
 				Context.save();
 				var grd = Context.createLinearGradient(0,0,0,720 );
@@ -141,7 +158,7 @@ PGMenu.prototype.Render = function(Context){
 					Context.drawImage(this.image,  xIndex - 30, yIndex * 7 );
 					
 				Context.fillText("STATE : " + "GOOD",xIndex, 0 + yIndex * 9 );	
-				Context.fillText("TIME : " + playGameState.time.GetTime() ,xIndex, 0 + yIndex * 11 );
+				Context.fillText("TIME : " + time.GetTime() ,xIndex, 0 + yIndex * 11 );
 				Context.fillText("GOLD : " + this.leftValue.gold,xIndex, 0 + yIndex * 12 );
 				
 				Context.drawImage(this.fs, 450  , 100 );
@@ -175,7 +192,8 @@ PGMenu.prototype.Render = function(Context){
 			case 2: //equipment
 				var xIndex = 100;
 				var yIndex = 100;
-				playGameState.InMenuState = true;
+				if(!this.isvillage)
+					playGameState.InMenuState = true;
 				Context.save();
 				var grd = Context.createLinearGradient(0,0,0,720 );
 				grd.addColorStop(0,"black");
@@ -314,9 +332,24 @@ PGMenu.prototype.Render = function(Context){
 				Context.fillRect(0,0,980,720);
 				DrawBorder(Context,"#ffffff",3,0,0,980,720);
 				Context.restore();
+				var x = 100, y = 100;
+				for(var i = 0 ; i < this.map.length; i++ )
+				{
+					if(this.map[i] != -1){
+						if(this.map[i] == 0)//not visible
+							Context.fillStyle = "black";
+						else//visible
+							Context.fillStyle = "white";
+							
+						Context.fillRect(x+((i%6)*40),y,40,40);
+					}
+					if( i % 6 == 5)
+						y += 40;
+				}
 			break;
 			case 4: //Save
-				playGameState.InMenuState = true;
+				if(!this.isvillage)
+					playGameState.InMenuState = true;
 				Context.save();
 				var grd = Context.createLinearGradient(0,0,0,720 );
 				grd.addColorStop(0,"black");
@@ -326,8 +359,12 @@ PGMenu.prototype.Render = function(Context){
 				DrawBorder(Context,"#ffffff",3,0,0,980,720);
 				Context.restore();
 			
+				yIndex = 30;
 				Context.fillText("TIME : " + this.leftValue.time,xIndex, 0 + yIndex * 1 );
-				Context.fillText("LOCATION : " + this.leftValue.location,xIndex, 0 + yIndex * 2 );
+				Context.fillText("MAPNAME : " + this.leftValue.name,xIndex, 0 + yIndex * 2 );
+				Context.fillText("MAPLOCATION : " + this.leftValue.stage,xIndex, 0 + yIndex * 3 );
+				Context.fillText("PlayerXY : " + this.leftValue.x+" "+this.leftValue.y,xIndex, 0 + yIndex * 4 );
+
 				
 			break;
 			case 5: //Quit
@@ -350,11 +387,24 @@ PGMenu.prototype.Update = function(){
 			this.BoxOn = false;
 			if(this.leftMenu == 4)
 			{
-				playGameState.InMenuState = false;
+				if(choice_value)
+				{
+					//send to server
+					var SaveData = {STATUS:Status.SetStatus(),TIME:time.nowFrame};
+				}
+				;
 				this.leftOn = false;
 			}
 			else if(this.leftMenu == 5)
+			{
+				if(choice_value && !this.isvillage)
+				{
+					playGameState.Notification("GOVILLIAGE");
+				}
+				else if(choice_value && this.isvillage)
+					;
 				this.leftOn = false;
+			}
 			else if(this.invenOn && choice_value) // change item
 			{
 				var _rightType = this.RightPage*8 + this.RightType -1;
@@ -370,23 +420,31 @@ PGMenu.prototype.Update = function(){
 		{
 			this.leftMenu--;
 			if(this.leftMenu < 1)
-				this.leftMenu = 5;
+				this.leftMenu = 5;soundSystem.PlaySound("sound/menu.select.wav");
 		}
 		else if(inputSystem.checkKeyDown(40))//down
 		{
 			this.leftMenu++;
 			if(this.leftMenu > 5)
-				this.leftMenu = 1;
+				this.leftMenu = 1;soundSystem.PlaySound("sound/menu.select.wav");
 		}
 		else if(inputSystem.checkKeyDown(13))//enter
 		{
-			this.leftOn = true;//test
-			this.Init();soundSystem.PlaySound("sound/menu.select.wav");
+			if(this.leftMenu == 3 && this.isvillage)// can't menu
+				;
+			else
+			{
+				this.leftOn = true;//test
+				this.Init();soundSystem.PlaySound("sound/menu.select.wav");
+			}
 		}
 		else if(inputSystem.checkKeyDown(90))//z , cancle
 		{
 			this.leftMenu = 1;
-			playGameState.Notification("GOGAME");
+			if(!this.isvillage)
+				playGameState.Notification("GOGAME");
+			else
+				return true;
 		}
 	}
 	else
@@ -399,24 +457,25 @@ PGMenu.prototype.Update = function(){
 				{
 					this.leftType--;
 					if(this.leftType < 1)
-						this.leftType = 2;
+						this.leftType = 2;soundSystem.PlaySound("sound/menu.select.wav");
 				}
 				else if(inputSystem.checkKeyDown(40))
 				{
 					this.leftType++;
 					if(this.leftType > 2)
-						this.leftType = 1;
+						this.leftType = 1;soundSystem.PlaySound("sound/menu.select.wav");
 				}
 				else if( this.leftValue.Ability.bonus > 0 && inputSystem.checkKeyDown(13))
 				{
 					if(this.leftType == 1 )//str
 						this.leftValue.GrowAbility("str");	
 					else if(this.leftType == 2)//dex
-						this.leftValue.GrowAbility("dex");
+						this.leftValue.GrowAbility("dex");soundSystem.PlaySound("sound/menu.select.wav");
 				} 
 				else if(inputSystem.checkKeyDown(90))
 				{
 					this.leftType = 1;
+					if(!this.isvillage)
 					playGameState.InMenuState = false;
 					this.leftOn = false;
 				}
@@ -428,21 +487,22 @@ PGMenu.prototype.Update = function(){
 				{
 					this.leftType--;
 					if(this.leftType < 1)
-						this.leftType = 6;
+						this.leftType = 6;soundSystem.PlaySound("sound/menu.select.wav");
 				}
 				else if(inputSystem.checkKeyDown(40))
 				{
 					this.leftType++;
 					if(this.leftType > 6)
-						this.leftType = 1;
+						this.leftType = 1;soundSystem.PlaySound("sound/menu.select.wav");
 				}
 				else if(inputSystem.checkKeyDown(13))
 				{
 					this.invenOn = true;
-					this.Init();
+					this.Init();soundSystem.PlaySound("sound/menu.select.wav");
 				}
 				else if ( inputSystem.checkKeyDown(90))
 				{
+					if(!this.isvillage)
 					playGameState.InMenuState = false;
 					this.leftOn = false;
 				}
@@ -450,7 +510,7 @@ PGMenu.prototype.Update = function(){
 				else//inven
 				{
 					if(inputSystem.checkKeyDown(38)) // up
-					{
+					{soundSystem.PlaySound("sound/menu.select.wav");
 						this.RightType--;
 						if(this.RightType < 1)
 						{
@@ -464,7 +524,7 @@ PGMenu.prototype.Update = function(){
 						}		
 					}
 					else if(inputSystem.checkKeyDown(40)) // down
-					{
+					{soundSystem.PlaySound("sound/menu.select.wav");
 						this.RightType++;
 						if(this.RightType > 8)
 						{
@@ -479,7 +539,7 @@ PGMenu.prototype.Update = function(){
 							
 					}
 					else if(inputSystem.checkKeyDown(37)) // left
-					{
+					{soundSystem.PlaySound("sound/menu.select.wav");
 						var pre = this.RightType; 
 						this.RightType -= 4;
 						if(this.RightType < 1)
@@ -494,7 +554,7 @@ PGMenu.prototype.Update = function(){
 						}
 					}
 					else if(inputSystem.checkKeyDown(39)) // right
-					{
+					{soundSystem.PlaySound("sound/menu.select.wav");
 						var pre = this.RightType;
 						this.RightType += 4;
 						if(this.RightType > 8)
@@ -509,7 +569,7 @@ PGMenu.prototype.Update = function(){
 						}
 					}
 					else if(inputSystem.checkKeyDown(13))//enter
-					{
+					{soundSystem.PlaySound("sound/menu.select.wav");
 						this.BoxOn = true;
 						this.BoxMenu.SetSTR("Change");
 					}
@@ -526,6 +586,7 @@ PGMenu.prototype.Update = function(){
 			case 3: //Map
 				if(inputSystem.checkKeyDown(13) || inputSystem.checkKeyDown(90))
 				{
+					if(!this.isvillage)
 					playGameState.InMenuState = false;
 					this.leftOn = false;
 				}
@@ -536,16 +597,22 @@ PGMenu.prototype.Update = function(){
 			break;
 			case 5: //Quit
 				this.BoxOn = true;
-				this.BoxMenu.SetSTR("Quit");
+				if(!this.isvillage)
+					this.BoxMenu.SetSTR("던젼에서 나감?");
+				else
+					this.BoxMenu.SetSTR("타이틀로 나감?");
 			break;	
 		};
 	}
 };
-
+PGMenu.prototype.Getmap = function(map){
+	if(this.map == null)
+		this.map = map;
+};
 function OKBox(){
 	this.x = 0;
 	this.y = 420;
-	this.width = 150;
+	this.width = 200;
 	this.height = 100;
 	this.image = resourcePreLoader.GetImage("img/point.png");
 	this.type = true;

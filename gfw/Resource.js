@@ -3,6 +3,14 @@ function Resource(){
 }
 Resource.prototype.AddImage = function(){
 	
+	//title
+	resourcePreLoader.AddImage("img/title_bg.png");
+	
+	//Villiage
+	resourcePreLoader.AddImage("img/NPC.png");
+	resourcePreLoader.AddImage("img/Castle.png");
+	resourcePreLoader.AddImage("img/village_house.png");
+	resourcePreLoader.AddImage("img/village_house2.png");
 	//icon img
 	resourcePreLoader.AddImage("img/point.png");
 	resourcePreLoader.AddImage("img/hp.png");
@@ -161,6 +169,10 @@ Resource.prototype.AddSound = function(){
 	
 	//soundSystem.AddSound();
 	//soundSystem.isLoadComplete = true;
+	
+	soundSystem.AddSound("sound/bgm_title.mp3",1,1);
+	soundSystem.AddSound("sound/bgm_darkcave.mp3",1,1);
+	soundSystem.AddSound("sound/bgm_village.mp3",1,1);
 	soundSystem.AddSound("sound/ElegantSummer.wav",1,0.5);
 	soundSystem.AddSound("sound/logo.wav",1);
 	
@@ -181,20 +193,20 @@ Resource.prototype.AddSound = function(){
 //	soundSystem.AddSound("sound/Akiha.attack9.wav",5);
 //	soundSystem.AddSound("sound/Akiha.attack10.wav",5);
 
-	soundSystem.AddSound("sound/Akiha.snd_000011.wav",1,0.5);
+	soundSystem.AddSound("sound/Akiha.snd_000011.wav",1,0.7);
 //	soundSystem.AddSound("sound/Akiha.snd_000034.wav",1,0.5);
 
-	soundSystem.AddSound("sound/Akiha.jump1.wav",1,0.5);
-	soundSystem.AddSound("sound/Akiha.jump2.wav",1,0.5);
+	soundSystem.AddSound("sound/Akiha.jump1.wav",1,0.7);
+	soundSystem.AddSound("sound/Akiha.jump2.wav",1,0.7);
 	
 //	soundSystem.AddSound("sound/Akiha.snd_000022.wav",1,0.5);
 //	soundSystem.AddSound("sound/Akiha.snd_000115.wav",1,0.5);
-	soundSystem.AddSound("sound/Akiha.snd_000116.wav",1,0.5);
-	soundSystem.AddSound("sound/Akiha.snd_000117.wav",1,0.5);
+	soundSystem.AddSound("sound/Akiha.snd_000116.wav",1,0.7);
+	soundSystem.AddSound("sound/Akiha.snd_000117.wav",1,0.7);
 	
-	soundSystem.AddSound("sound/ski.hit.wav",5,0.5);
-	soundSystem.AddSound("sound/ski.atk.wav",5,0.5);
-	soundSystem.AddSound("sound/ski.see.wav",1,0.5);
-	soundSystem.AddSound("sound/ski.miss.wav",1,0.5);
-	soundSystem.AddSound("sound/menu.select.wav",2,0.5);
+	soundSystem.AddSound("sound/ski.hit.wav",5,0.7);
+	soundSystem.AddSound("sound/ski.atk.wav",5,0.7);
+	soundSystem.AddSound("sound/ski.see.wav",1,0.7);
+	soundSystem.AddSound("sound/ski.miss.wav",1,0.7);
+	soundSystem.AddSound("sound/menu.select.wav",2,0.7);
 };
