@@ -61,11 +61,11 @@ PGMenu.prototype.Init = function(){
 			if(!this.isvillage)
 			{
 				var information = playGameState.StageInfomation;
-				this.leftValue = {time :time.GetTime(),name : information.name,stage:information.stage,x:information.x,y:information.y};
+				this.leftValue = {time :time.GetTime(),name : information.name,stage:information.stage,x:playGameState.player.x,y:playGameState.player.y};
 			}
 			else
 			{
-				this.leftValue = {time :time.GetTime(),name : "village",stage:"villiage",x:"?",y:"?"};
+				this.leftValue = {time :time.GetTime(),name : "village",stage:0,x:0,y:500};
 			}
 		break;
 		case 5: //Quit
@@ -245,7 +245,7 @@ PGMenu.prototype.Render = function(){
 				xIndex = 500;
 				yIndex = 50;
 				Inven = this.leftValue;
-				Context.fillText("HP       "+Inven.MaxHP+"       ->       ",xIndex, 0 + yIndex * 1 );
+				Context.fillText("HP       "+Inven.HP+"       ->       ",xIndex, 0 + yIndex * 1 );
 				Context.fillText("STR       "+Inven.Ability.str+"       ->       ",xIndex, 0 + yIndex * 2 );
 				Context.fillText("DEF       "+Inven.Ability.dex+"       ->       ",xIndex, 0 + yIndex * 3 );
 				Context.fillText("ATK       "+Inven.Ability.Attack+"       ->       ",xIndex, 0 + yIndex * 4 );
@@ -285,40 +285,54 @@ PGMenu.prototype.Render = function(){
 					item = Inven.equipment[this.leftType-1];
 					var pre_item = Item.SearchItem(this.leftType-1,item);
 					
-					Context.fillText(""+Inven.MaxHP,xIndex, 0 + yIndex * 1 );
-					
-					if(_item.str == 0 || _item.str == pre_item.str)
+					if(this.leftType-1 == 5){
+					if(Inven.HP == Inven.MaxHP)
+					{
 						Context.fillStyle = "gray";
-					else if(_item.str > pre_item.str)
+						Context.fillText(""+Inven.MaxHP,xIndex, 0 + yIndex * 1 );
+					}
+					else
+					{
+						Context.fillStyle = "green";
+						if(Inven.HP+_item.ability>=Inven.MaxHP)
+							Context.fillText(""+Inven.MaxHP,xIndex, 0 + yIndex * 1 );
+						else
+							Context.fillText(""+(Inven.HP+_item.ability),xIndex, 0 + yIndex * 1 );
+					}
+					}
+					else{
+					if(Inven.Ability.str + _item.str == Inven.Ability.str + pre_item.str)
+						Context.fillStyle = "gray";
+					else if(Inven.Ability.str+_item.str > Inven.Ability.str+pre_item.str)
 						Context.fillStyle = "green";
 					else
 						Context.fillStyle = "red";
 					Context.fillText(""+(Inven.Ability.str+_item.str-pre_item.str),xIndex, 0 + yIndex * 2 );
 					
-					if(_item.dex == 0 || _item.dex == pre_item.dex)
+					if(Inven.Ability.dex+_item.dex == Inven.Ability.dex+pre_item.dex)
 						Context.fillStyle = "gray";
-					else if(_item.dex > pre_item.dex)
+					else if(Inven.Ability.dex+_item.dex > Inven.Ability.dex+pre_item.dex)
 						Context.fillStyle = "green";
 					else
 						Context.fillStyle = "red";
 					Context.fillText(""+(Inven.Ability.dex+_item.dex-pre_item.dex),xIndex, 0 + yIndex * 3 );
 					
-					if(_item.atk == 0 || _item.atk == pre_item.atk)
+					if(Inven.Ability.Attack+_item.atk == Inven.Ability.Attack+pre_item.atk)
 						Context.fillStyle = "gray";
-					else if(_item.atk > pre_item.atk)
+					else if(Inven.Ability.Attack+_item.atk > Inven.Ability.Attack+pre_item.atk)
 						Context.fillStyle = "green";
 					else
 						Context.fillStyle = "red";
 					Context.fillText(""+(Inven.Ability.Attack+_item.atk-pre_item.atk),xIndex, 0 + yIndex * 4 );
 						
-					if(_item.def == 0 || _item.def == pre_item.def)
+					if(Inven.Ability.Defense+_item.def == Inven.Ability.Defense+pre_item.def)
 						Context.fillStyle = "gray";
-					else if(_item.def > pre_item.def)
+					else if(Inven.Ability.Defense+_item.def > Inven.Ability.Defense+pre_item.def)
 						Context.fillStyle = "green";
 					else
 						Context.fillStyle = "red";
 					Context.fillText(""+(Inven.Ability.Defense+_item.def-pre_item.def),xIndex, 0 + yIndex * 5 );
-					
+					}
 					}
 				}
 			break;
@@ -335,7 +349,7 @@ PGMenu.prototype.Render = function(){
 				var x = 100, y = 100;
 				for(var i = 0 ; i < this.map.length; i++ )
 				{
-					if(this.map[i] != -1){
+					if(this.map[i] != 2){
 						if(this.map[i] == 0)//not visible
 							Context.fillStyle = "black";
 						else//visible
@@ -390,20 +404,29 @@ PGMenu.prototype.Update = function(){
 				if(choice_value)
 				{
 					//send to server
-					var SaveData = {STATUS:Status.SetStatus(),TIME:time.nowFrame};
+					SaveData = ""+Status.SetStatus()+"@"+this.leftValue.time+"@"+this.leftValue.name+"@"+this.leftValue.stage+"@"+this.leftValue.x+"@"+this.leftValue.y;
+					if(!this.isvillage)
+						SaveData += "@"+this.Settingmap("save");
+						
+					gfwSocket.Emit("save", SaveData);
 				}
-				;
+				if(!this.isvillage)
+					playGameState.InMenuState = false;
 				this.leftOn = false;
 			}
 			else if(this.leftMenu == 5)
 			{
+				this.leftOn = false;
 				if(choice_value && !this.isvillage)
 				{
 					playGameState.Notification("GOVILLIAGE");
 				}
 				else if(choice_value && this.isvillage)
-					;
-				this.leftOn = false;
+				{
+					soundSystem.StopBackgroundMusic();
+					var ts = new TitleState();
+					ChangeGameState(new TransitionFadeIn(ts,ts,6.0));
+				}
 			}
 			else if(this.invenOn && choice_value) // change item
 			{
@@ -476,7 +499,7 @@ PGMenu.prototype.Update = function(){
 				{
 					this.leftType = 1;
 					if(!this.isvillage)
-					playGameState.InMenuState = false;
+						playGameState.InMenuState = false;
 					this.leftOn = false;
 				}
 			break;
@@ -503,7 +526,7 @@ PGMenu.prototype.Update = function(){
 				else if ( inputSystem.checkKeyDown(90))
 				{
 					if(!this.isvillage)
-					playGameState.InMenuState = false;
+						playGameState.InMenuState = false;
 					this.leftOn = false;
 				}
 				}
@@ -587,7 +610,7 @@ PGMenu.prototype.Update = function(){
 				if(inputSystem.checkKeyDown(13) || inputSystem.checkKeyDown(90))
 				{
 					if(!this.isvillage)
-					playGameState.InMenuState = false;
+						playGameState.InMenuState = false;
 					this.leftOn = false;
 				}
 			break;
@@ -609,6 +632,20 @@ PGMenu.prototype.Getmap = function(map){
 	if(this.map == null)
 		this.map = map;
 };
+PGMenu.prototype.Settingmap = function(state,value){
+	if(state == "load")
+	{
+		for(var i = 0;i < value.length;i++)
+			this.map[i] = value[i];
+	}
+	else if(state == "save")
+	{
+		var st = "";
+		for(var i = 0 ; i < this.map.length; i++)
+			st += this.map[i];
+		return st;
+	}
+};
 function OKBox(){
 	this.x = 0;
 	this.y = 420;
@@ -618,9 +655,20 @@ function OKBox(){
 	this.type = true;
 
 	this.str = "noSTR";
+	this.q1 = "네";
+	this.q2 = "아니요";
 }
-OKBox.prototype.SetSTR = function(str){
+OKBox.prototype.SetSTR = function(str,q1,q2){
 	this.str = str;
+	if(q1 != undefined)
+		this.q1 = q1;
+	else
+		this.q1 = "네";
+		
+	if(q2 != undefined)
+		this.q2 = q2;
+	else
+		this.q2 = "아니요";
 };
 OKBox.prototype.Render = function(Context){
 
@@ -653,8 +701,8 @@ OKBox.prototype.Render = function(Context){
 	Context.font = '20px Arial';
 	Context.fillText(this.str+" ?", _x ,this.y+10);//yes
 	Context.font = '15px Arial';
-	Context.fillText("Yes", _x ,this.y+yIndex*2);//yes
-	Context.fillText("No", _x ,this.y+yIndex*3);//no
+	Context.fillText(this.q1, _x ,this.y+yIndex*2);//yes
+	Context.fillText(this.q2, _x ,this.y+yIndex*3);//no
 	Context.restore();
 };
 OKBox.prototype.Update = function(){

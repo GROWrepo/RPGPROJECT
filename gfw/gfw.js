@@ -12,12 +12,12 @@ function onGameInit()
 	R.AddSound();
 
 	//socket.io
-//	new gfwSocket("http://121.152.186.155:9892");
+	new gfwSocket("http://127.0.0.1:9892");
 
 	//121.152.186.155
 	//init state setting
-	after_loading_state = new LogoState();
-//	after_loading_state = new TitleState();
+//	after_loading_state = new PlayGameState("DarkCave",0,0,457);
+	after_loading_state = new LoginState();
 	
 	setInterval(gameLoop, 1000/GAME_FPS);
 }

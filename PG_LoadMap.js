@@ -36,7 +36,7 @@ MapTile.prototype.SetStage = function (){
 	_monster.push(null);
 	_monster.push(null);
 	
-	_mapscreen = [1,0,-1,-1,-1,-1,-1,0];
+	_mapscreen = [1,0,2,2,2,2,2,0];
 	var Data = {Name:"DarkCave", Bg:"cave_bg", Mapdata:_mapdata, Mapscreen:_mapscreen, Monster:_monster};
 	this.MapData.push(Data);
 	//////

@@ -81,17 +81,17 @@ PG_chating.prototype.Render = function(){
 	
 	if(this.row == this.nowrow)
 	{
-		Context.fillText(this.chat[this.nowrow].getString(),75,570+this.nowrow*30);console.log("1");this.last = true;
+		Context.fillText(this.chat[this.nowrow].getString(),75,570+this.nowrow*30);this.last = true;
 	}
 	else {
 		if(this.chat[this.nowrow].NumofPrint > this.chat[this.nowrow].str.length){
 			this.firststr +=30;
 			this.nowrow++;
-			this.chat.push(new chat(this.str.substr(this.firststr,30),this.Speed));console.log("2");
+			this.chat.push(new chat(this.str.substr(this.firststr,30),this.Speed));
 		}
 		else
 		{
-			Context.fillText(this.chat[this.nowrow].getString(),75,570+this.nowrow*30);console.log("3");
+			Context.fillText(this.chat[this.nowrow].getString(),75,570+this.nowrow*30);
 				
 		}
 		
@@ -112,7 +112,7 @@ PG_chating.prototype.Render = function(){
 PG_chating.prototype.Update = function(){
 
 	if(this.last && inputSystem.checkKeyDown(90))//z
-	{	this.ReSet();
+	{	this.Reset();
 		playGameState.ChatBoxs.Event("off");
 	}
 	

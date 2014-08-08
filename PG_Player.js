@@ -1,4 +1,4 @@
-function PGPlayer(){
+function PGPlayer(x,y){
 
 	// 00 = stop / 26 = walk / 13 = dash / 17 = jump / 15 = Movingjump / 01 = attack / 피격 = 21 / 40 = 발공격
 	// 47 = 앉아공격  / 23 = 앉아피격 / down = 28
@@ -25,8 +25,8 @@ function PGPlayer(){
 	
 	this.leftBound = 0;
 	this.rightBound = 1280 - 59 ;
-	this.x = 0;
-	this.y = 720 -256 -7;
+	this.x = x;
+	this.y = y;
 	
 //	this.onEnter = false;
 	

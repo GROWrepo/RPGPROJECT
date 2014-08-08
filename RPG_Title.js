@@ -1,9 +1,27 @@
+var titlestate;
 function TitleState()
 {
-	this.imgBackground = resourcePreLoader.GetImage("img/title_bg.png");
+	titlestate = this;
 	
+	this.imgBackground = resourcePreLoader.GetImage("img/title_bg.png");
+	this.title;
 	this.type = 0;
-	return this;
+	
+	gfwSocket.On("control_in_game",function(msg)
+	{
+		switch(msg.key)
+		{
+			case "up": //38
+			inputSystem.setKeyDown(38,msg.value);
+			break;
+			case "down": //40
+			inputSystem.setKeyDown(40,msg.value);
+			break;		
+			case "menu"://13
+			inputSystem.setKeyDown(13,msg.value);
+			break;
+		};
+	});
 }
 
 TitleState.prototype.Init = function()
@@ -67,19 +85,39 @@ TitleState.prototype.Update = function()
 		{
 			if(this.type == 0)//new
 			{
-				var vs = new VilliageState();
+				var vs = new PrologState();
 				ChangeGameState(new TransitionFadeOut (this, new TransitionFadeIn(vs,vs,5.0) ,5.0));
 				soundSystem.StopBackgroundMusic();
 			}
 			else if(this.type == 1)//continue
 			{
-				var vs = new VilliageState();
-				ChangeGameState(new TransitionFadeOut (this, new TransitionFadeIn(vs,vs,5.0) ,5.0));
+				Item = new PGItem();
+				Status = new PGStatus(1, 100);
+				time = new Timer();
+				
+				gfwSocket.Emit("load",true);
+				gfwSocket.On("_load",function (data)
+				{
+					var arr = data.split("@");
+					
+					Status.GetStatus(arr[0]);
+					time.SetTime(arr[1]);
+					
+					if(arr[2] == "village")
+					{
+						ChangeGameState(new TransitionFadeOut (titlestate, new VilliageState() ,5.0));
+					}
+					else
+					{
+						ChangeGameState(new TransitionFadeOut (titlestate, new PlayGameState(arr[2],parseInt(arr[3]),parseInt(arr[4]),parseInt(arr[5]),arr[6]) ,6.0));
+					}
+				});
+				
 				soundSystem.StopBackgroundMusic();
 			}
 			else if(this.type == 2)//exit
 			{
-				
+				ChangeGameState(new LoginState());
 			}
 
 		}

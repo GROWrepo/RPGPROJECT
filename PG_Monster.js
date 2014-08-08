@@ -40,7 +40,8 @@ function monster(name, x, y){
 	this.life;
 	this.Damage;
 	this.exp;
-
+	this.itemlist;
+	
 	this.alpha = 1.0;
 	this.dead = false;
 	this.sprmonster;
@@ -87,6 +88,8 @@ monster.prototype.Init = function(){
 			this.exp = 20;
 			this.sea = 100;
 			this.sprmonster= new GraphicObjectAnimation("sk", 0, 1, 1);
+			this.itemlist = new Array();
+			this.itemlist.push({name:"potion",prob:1.0,type:5});
 					
 			this.inputFrameSkipper_wait = new FrameSkipper(2000);
 			this.inputFrameSkipper_wait.Set();
@@ -106,12 +109,14 @@ monster.prototype.Init = function(){
 			this.CollisitionBox_01.push(makeBox("90,134,75,93,//165,150,25,60,"));
 		break;
 		case "test":
-			this.totallife = 9999;
-			this.life = 9999;
+			this.totallife = 300;
+			this.life = 300;
 			this.Damage = 12;
 			this.exp = 20;
 			this.sea = 100;
 			this.sprmonster= new GraphicObjectAnimation("sk", 0, 1, 1);
+			this.itemlist = new Array();
+			this.itemlist.push({name:"Bdress",prob:1.0,type:1});
 					
 			this.inputFrameSkipper_wait = new FrameSkipper(2000);
 			this.inputFrameSkipper_wait.Set();
@@ -152,6 +157,17 @@ monster.prototype.Attacked = function(value){
 	this.life -= value / 10;
 	if(this.life < 0)//dead
 	{
+		var Prob = RandomNextInt(0,100);
+		for(var i = 0; i< this.itemlist.length; i++)		
+			if(this.itemlist[i].prob*100 >= Prob)
+			{
+				//make item
+				var _item = Item.SearchItem(this.itemlist[i].type,this.itemlist[i].name);
+				playGameState.Notification("MAKEOBJECT",{name:"item",type:_item.type,item:_item.name,
+				img:_item.img,x:_item.x,y:_item.y,left : (this.x + 128-35),top: (this.y + 256-70-26) ,right: (this.x + 128+35) ,bottom: (this.y + 256+26)});
+				break;
+			}
+
 		Status.GetExp(this.exp);
 		this.dead = true;
 	}

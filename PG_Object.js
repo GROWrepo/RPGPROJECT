@@ -2,11 +2,12 @@ function PGObject(){
 	
 	this.gate = new Array();
 	this.dialog = new Array();
-	
+	this.item = new Array();
 }
 PGObject.prototype.reset = function(){
 	this.gate = new Array();
 	this.dialog = new Array();
+	this.item = new Array();
 };
 PGObject.prototype.makeObject = function(_obj){
 	
@@ -17,10 +18,23 @@ PGObject.prototype.makeObject = function(_obj){
 		case "dialog":
 			this.dialog.push(_obj);
 		break;
+		case "item":
+			this.item.push(_obj);
+		break;
 	};
 };
 PGObject.prototype.Render = function(){
-
+	var theCanvas = document.getElementById("GameCanvas");
+	var Context = theCanvas.getContext("2d");
+	
+	for(var i = 0; i < this.item.length; i++)
+	{
+		Context.drawImage(this.item[i].img,
+					this.item[i].x,this.item[i].y,
+					70,70,
+					this.item[i].left,this.item[i].top,
+					70,70);	
+	}
 };
 PGObject.prototype.Update = function(){
 
@@ -55,6 +69,23 @@ PGObject.prototype.Update = function(){
 					Type = "dialog";
 				}
 				}
+			}
+			
+			var _itemNum = -1;
+			for(var i = 0; i < this.item.length; i++)
+			{
+				var isCrash = ISIntersectRect(player[j],this.item[i]);
+				if(inputSystem.isKeyDown(86) && isCrash)// event
+				{
+					_itemNum = i;
+				}
+				
+			}
+			if(_itemNum != -1)
+			{
+				playGameState.StateLine.PushLine("item get : "+this.item[_itemNum].item);
+				Status.inventory.setItem(this.item[_itemNum].type,this.item[_itemNum].item);
+				this.item.splice(_itemNum,1);
 			}
 		}
 		if(Type != "no")

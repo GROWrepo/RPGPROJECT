@@ -2,13 +2,14 @@ var playGameState;
 var Status;
 var Item;
 var time;
-function PlayGameState(name)
+function PlayGameState(name,stage,x,y,map)
 {	
+	playGameState = this;
 	this.StageInfomation;
 	this.GAME_SPEED = 1.5;
 	
 	this.background = new PGbackground();
-	this.player = new PGPlayer();
+	this.player = new PGPlayer(x,y);
 	this.monster = new PGMonster();
 	this.Object = new PGObject();
 	this.Map = new MapTile();
@@ -21,48 +22,47 @@ function PlayGameState(name)
 	this.InMenuState = false;
 	this.InChatState = false;
 	
-	playGameState = this;
+	this.Map.LoadStage(name,stage);
 	
-	this.Map.LoadStage(name,0);
-/*	
+	if(map != undefined)
+		this.Menu.Settingmap("load",map);
+	
 	gfwSocket.On("control_in_game",function(msg)
 	{
 		switch(msg.key)
 		{
 			case "up": //38
-			inputSystem.setKeyDown(0,msg.value);
+			inputSystem.setKeyDown(38,msg.value);
 			break;
 			case "left": //37
 			inputSystem.setKeyDown(37,msg.value);
 			break;
-			case "down":
-			inputSystem.setKeyDown(0,msg.value);
+			case "down": //40
+			inputSystem.setKeyDown(40,msg.value);
 			break;
 			case "right": //39
 			inputSystem.setKeyDown(39,msg.value);
 			break;
 			case "A": //88
+			inputSystem.setKeyDown(0,msg.value);
+			break;
+			case "B": // z
+			inputSystem.setKeyDown(90,msg.value);
+			break;
+			case "C": // x
 			inputSystem.setKeyDown(88,msg.value);
 			break;
-			case "B":
+			case "D": // c
+			inputSystem.setKeyDown(67,msg.value);
+			break;
+			case "menu":
 			inputSystem.setKeyDown(0,msg.value);
-			break;
-			case "C":
-			inputSystem.setKeyDown(38,msg.value);
-			break;
-			case "D":
-			inputSystem.setKeyDown(0,msg.value);
-			break;
-			case "menu"://13
-			inputSystem.setKeyDown(13,msg.value);
 			break;
 			case "enter":
-			inputSystem.setKeyDown(0,msg.value);
+			inputSystem.setKeyDown(13,msg.value);
 			break;
 		};
-	});
-*/	
-	
+	});	
 }
 
 PlayGameState.prototype.Init = function()
@@ -78,8 +78,10 @@ PlayGameState.prototype.Render = function()
 	{
 		this.background.Render();
 		this.Map.Render();
+		this.Object.Render();
 		this.monster.Render();
 		this.player.Render();
+
 	}
 	Status.Render();
 	this.StateLine.Render();
@@ -138,7 +140,7 @@ PlayGameState.prototype.Notification = function(msg,value)
 			this.isGameStop = false;this.MenuOn = false;
 		break;
 		case "SET_STAGE":
-			this.StageInfomation = {name:this.Map.Name,stage:this.Map.Stage,x:this.player.x,y:this.player.y};
+			this.StageInfomation = {name:this.Map.Name,stage:this.Map.Stage};
 		break;
 		case "CHANGE_MAP":
 			this.Map.LoadStage(value.name,value.stage);

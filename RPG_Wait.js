@@ -1,12 +1,19 @@
 function WaitGame() {
-	this.fs = new FrameSkipper(2000);
-	this.load = false;
 	this.key;
+	
+	gfwSocket.On("start_game",function (msg)
+	{
+		if(msg != "fail")
+			ChangeGameState(new LogoState());
+		
+	});
 }
 
 WaitGame.prototype.Init = function()
 {
 	this.key = RandomNextInt(0,1000);
+	
+	gfwSocket.Emit("want_game",this.key);	
 };
 WaitGame.prototype.Render = function()
 {
@@ -21,20 +28,5 @@ WaitGame.prototype.Render = function()
 };
 WaitGame.prototype.Update = function()
 {
-	if( this.load == false && this.fs.isWork() ){
-		this.load = true;
-		this.loadSocket();
-	}
 };
 
-WaitGame.prototype.loadSocket = function()
-{
-	gfwSocket.Emit("want_game",this.key);	
-	
-	gfwSocket.On("start_game",function (msg)
-	{
-		if(msg != "fail")
-			ChangeGameState(new PlayGameState(2));
-		
-	});
-};

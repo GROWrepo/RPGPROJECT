@@ -27,14 +27,6 @@ function PGStatus(level,maxhp){
 	//img
 	this.hpImg = resourcePreLoader.GetImage("img/hp.png");
 	
-	//test
-	this.inventory.setItem(1,"dress");
-	this.inventory.setItem(1,"dress");
-	this.inventory.setItem(2,"Aneck");
-	this.inventory.setItem(4,"shoes");
-	this.inventory.setItem(0,"sword");
-	this.inventory.setItem(0,"longsword");
-	
 	Status = this;
 }
 PGStatus.prototype.SetStatus = function(){
@@ -75,6 +67,15 @@ PGStatus.prototype.GetStatus = function(Data){
 PGStatus.prototype.SetEquipment = function(inout,type,name){
 	if(inout == "in")//in
 	{
+		if(name == "potion")
+		{
+			this.inventory.getItem(type,name);
+			var _item = Item.SearchItem(type,name);	
+			this.Healing(_item.ability);
+			playGameState.StateLine.PushLine("Healing : "+_item.ability);
+		}
+		else
+		{
 		var item = this.equipment[type];
 		
 		if(item != "not")
@@ -84,7 +85,7 @@ PGStatus.prototype.SetEquipment = function(inout,type,name){
 			this.Ability.str -= pre_item.str;
 			this.Ability.dex -= pre_item.dex;
 			this.Ability.Attack -= pre_item.atk;
-			this.Ability.Defense -= pre_item.def;
+			this.Ability.Defense -= pre_item.def;		
 		}
 		
 		this.equipment[type] = this.inventory.getItem(type,name);		
@@ -93,6 +94,7 @@ PGStatus.prototype.SetEquipment = function(inout,type,name){
 		this.Ability.dex = this.Ability.dex + _item.dex;
 		this.Ability.Attack = this.Ability.Attack + _item.atk;
 		this.Ability.Defense = this.Ability.Defense + _item.def;
+		}
 	}
 	else if(inout == "out")//out
 	{

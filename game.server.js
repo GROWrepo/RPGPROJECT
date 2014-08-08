@@ -9,7 +9,7 @@ function(request,response)
 
 server.listen(9892,function()
 {
-	console.log("AA_Game Server Start port:9892");
+	console.log("Game Server Start port:9892");
 });
 
 var io = socketio.listen(server);
@@ -86,18 +86,94 @@ io.sockets.on("connection",function(socket)
 		console.log(value);
 		io.sockets.sockets[player.rival_id].emit("control_in_game",value);
 	});
-/*	
-	socket.on("debug",function (value)
+	socket.on("save",function (value)
 	{	
-		console.log(value);
+		console.log("save");
+		var player;
+		socket.get("user_data",function(error,user_data)
+		{
+			player = user_data;
+		});
+		var id = player.loginID;
+		
+		var fs = require("fs");
+ 		var fileName = "./login/"+id+".txt";
+ 		
+		try {
+		  fs.writeFileSync(fileName,value,"utf8");
+		}catch (e) {
+    	console.log(e);
+		}
 	});
-*/	
+	socket.on("load",function (value)
+	{	
+		console.log("load");
+		var player;
+		socket.get("user_data",function(error,user_data)
+		{
+			player = user_data;
+		});
+		var id = player.loginID;
+		
+		var fs = require("fs");
+ 		var fileName = "./login/"+id+".txt";
+		
+		try {
+			fileName = "./login/"+id+".txt";
+			fd = fs.readFileSync(fileName,"utf8");
+			socket.emit('_load', fd);
+  		}catch (e) {
+    		console.log(e);
+		}
+	});
+	socket.on("login",function (value)
+	{
+		var player;
+		socket.get("user_data",function(error,user_data)
+		{
+			player = user_data;
+		});
+		
+		var fs = require("fs");
+ 		var fileName = "./login/login.txt";
+		
+		try {
+  		  var fd = fs.readFileSync(fileName,"utf8");
+  		  var strArray = fd.split("/");
+  		  
+  		  for(var i = 0; i < strArray.length; i++)
+  		  {
+  		  	var data =strArray[i].split(",");
+  		  	if(data[0] == value.id)
+  		  	{
+  		  		if(data[1] == value.pw)
+  		  		{
+  		  			//succ
+  		  			console.log("login succ");
+  		  			player.loginID = data[0];
+  		  			socket.emit('_login', true);
+  		  			console.log(player.loginID);
+  		  		}
+  		  		else
+  		  		{
+  		  			//wrong pw
+  		  			console.log("login fail");
+  		  			socket.emit('_login', false);
+  		  		}
+  		  	}
+  		  }
+		}catch (e) {
+    		console.log(e);
+		}
+	});
+	
 });
 
 function Player(id)
 {
 	this.id = id;
 	this.key = 0;
+	this.loginID = 0;
 	this.isWantGame = false;
 	this.rival_id = 0;
 }

@@ -16,6 +16,31 @@ Timer.prototype.Set = function()//on off
 {
 	this.isUpdate = !this.isUpdate;
 };
+Timer.prototype.SetTime = function(time)//Time
+{
+	var Frame = 0;
+	var _time = time.split(":");
+	if(_time[0] == "00")
+		;
+	else
+	{
+		Frame+=parseInt(_time[0])*3600;	
+	}
+	if(_time[1] == "00")
+		;
+	else
+	{
+		Frame+=parseInt(_time[1])*60;	
+	}
+	if(_time[2] == "00")
+		;
+	else
+	{
+		Frame+=parseInt(_time[1]);	
+	}
+	
+	this.nowFrame = Frame;
+};
 Timer.prototype.GetTime = function()//Time
 {
 
