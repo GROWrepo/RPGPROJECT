@@ -22,12 +22,13 @@ function PGPlayer(x,y){
 	this.preidle;
 	
 	this.sprplayer = new GraphicObjectAnimation("aki",0, 12, 12);
+	this.effect = new GraphicObjectAnimation("effect",10, 1, 1);
+	this.bow = new GraphicObjectAnimation("bow",10,1,1);
 	
 	this.leftBound = 0;
 	this.rightBound = 1280 - 59 ;
 	this.x = x;
-	this.y = y;
-	
+	this.y = y; 
 //	this.onEnter = false;
 	
 	this.UpCollisitionBox = new Array();//	={left: this.x,top : this.y + 42,right : this.x+56,bottom : this.y+146 - 19};
@@ -172,6 +173,9 @@ PGPlayer.prototype.Render = function(){
 	var Context = theCanvas.getContext("2d");
 	
 	this.sprplayer.Render(Context);
+	this.effect.Render(Context);
+	this.bow.Render(Context);
+	
 	
 };
 PGPlayer.prototype.Update = function(crashDirection){
@@ -191,6 +195,7 @@ PGPlayer.prototype.Update = function(crashDirection){
 		
 	if(this.isWait && this.stopTime.isWork())
 	{
+		
 		if(this.stopCount)
 		{
 			this.sprplayer.ChangeImage(93,14,9);
@@ -204,8 +209,11 @@ PGPlayer.prototype.Update = function(crashDirection){
 			this.sprplayer.ChangeForward(this.position);		
 			this.idle = 91;
 			this.Invalid(0);this.EffectSound();
+		
 		}
 		this.stopCount = !this.stopCount;
+		this.effect.ChangeImage(10,1,1);
+		this.bow.ChangeImage(10,1,1);
 	}	
 	if(this.inputFrameSkipper.isWork())
 	{
@@ -343,6 +351,8 @@ PGPlayer.prototype.Update = function(crashDirection){
 		{
 			this.sitting = false;
 		}
+		this.effect.ChangeImage(10,1,1);
+		this.bow.ChangeImage(10,1,1);
 	}
 	else if(!isLand)
 	{	
@@ -389,6 +399,8 @@ PGPlayer.prototype.Update = function(crashDirection){
 			this.isJump = false;
 			
 		this.y += this.gravity;this.Invalid();
+		this.effect.ChangeImage(10,1,1);
+		this.bow.ChangeImage(10,1,1);
 	}
 	
 	if (this.preidle == 13)
@@ -416,6 +428,8 @@ PGPlayer.prototype.Update = function(crashDirection){
 					this.x = this.leftBound;
 				this.Invalid();
 			}
+			this.effect.ChangeImage(10,1,1);
+			this.bow.ChangeImage(10,1,1);
 	}
 	
 	if(this.sitting && inputSystem.checkKeyDown(88) && this.preidle != 47)//x 앉아공격
@@ -423,15 +437,23 @@ PGPlayer.prototype.Update = function(crashDirection){
 			this.idle = 47;this.preidle = 47;
 			this.sprplayer.ChangeImage(47, 5, 10);
 			this.sprplayer.ChangeForward(this.position);
-		
+			this.effect.ChangeImage(10,1,1);
+			this.bow.ChangeImage(10,1,1);
 			this.Invalid(0);this.EffectSound();
 	}
 	else if(inputSystem.checkKeyDown(88) && this.preidle != 1)//x : attack
 		{
+			
 			this.idle = 1;this.preidle = 1;
 			this.sprplayer.ChangeImage(1, 6, 12);
 			this.sprplayer.ChangeForward(this.position);
-		
+				this.effect.ChangeImage(10,1,1);
+				this.bow.ChangeImage(10,1,1);
+			if(Status.equipment[0]=="bow")
+			{
+				this.bow.ChangeImage(0,7,14);
+				this.bow.ChangeForward(this.position);
+			}
 			this.Invalid(0);this.EffectSound();
 		}
 	else if(inputSystem.checkKeyDown(90) && this.preidle != 40)//z : 발공격
@@ -439,10 +461,21 @@ PGPlayer.prototype.Update = function(crashDirection){
 			this.idle = 40;this.preidle = 40;
 			this.sprplayer.ChangeImage(40, 11, 22);
 			this.sprplayer.ChangeForward(this.position);
-		
+			console.log(Status.equipment[0]);
+			if(Status.equipment[0]=="sword")
+			{
+			this.effect.ChangeImage(0,11,22);
+			this.effect.ChangeForward(this.position);
+			}
+			else if(Status.equipment[0]=="spear")
+			{
+			this.effect.ChangeImage(01,11,22);
+			this.effect.ChangeForward(this.position);
+			}
 			this.Invalid(0);this.EffectSound();
 	}
-	
+	this.bow.Update();
+	this.effect.Update();
 	if (this.preidle == 17)this.idle = 17;	
 	if (this.preidle == 15)this.idle = 15;
 	if (this.preidle == 1)this.idle = 1;
@@ -595,8 +628,29 @@ PGPlayer.prototype.EffectSound = function(){
 };
 PGPlayer.prototype.Invalid = function(NumOfcollisition)
 {
+	if(Status.equipment[0]=="bow")
+	{
+		if(this.position==0)
+			this.bow.SetPosition(this.x-180, this.y+20);
+		else if(this.position==1)
+			this.bow.SetPosition(this.x+180, this.y+20);
+	}
 	this.sprplayer.SetPosition( this.x, this.y);
-
+	if(Status.equipment[0]=="sword")
+	{
+		if(this.position==0)
+			this.effect.SetPosition(this.x-40, this.y);
+		else if(this.position==1)
+			this.effect.SetPosition(this.x+40, this.y);
+	}
+	else if(Status.equipment[0]=="spear")
+	{
+		if(this.position==0)
+			this.effect.SetPosition(this.x-160, this.y+40);
+		else if(this.position==1)
+			this.effect.SetPosition(this.x+160, this.y+40);
+	}
+	
 	if(NumOfcollisition != undefined)
 	{
 		var CollisitionArray;
@@ -664,13 +718,36 @@ PGPlayer.prototype.Invalid = function(NumOfcollisition)
 		this.DownCollisitionBox[i].bottom = this.DownCollisitionBox[i].top + this.DownCollisitionBox[i].h;
 	}
 	for(var i = 0 ; i < this.AttackCollisitionBox.length; i++){
-		if(this.position == 0)
-			this.AttackCollisitionBox[i].left = this.x + (256 - this.AttackCollisitionBox[i].x - this.AttackCollisitionBox[i].w);
+		if(Status.equipment[0]=="sword")
+		{
+			if(this.position == 0)
+				this.AttackCollisitionBox[i].left = this.x + (256 - 150 - 130);
+			else
+				this.AttackCollisitionBox[i].left = this.x + 150;
+				this.AttackCollisitionBox[i].top = this.y + 105;
+				this.AttackCollisitionBox[i].right = this.AttackCollisitionBox[i].left + 130;
+				this.AttackCollisitionBox[i].bottom = this.AttackCollisitionBox[i].top + 100;
+		}
+		else if(Status.equipment[0]=="spear")
+		{
+			if(this.position == 0)
+				this.AttackCollisitionBox[i].left = this.x + (256 - 150 - 170);
+			else
+				this.AttackCollisitionBox[i].left = this.x + 150;
+				this.AttackCollisitionBox[i].top = this.y + 161;
+				this.AttackCollisitionBox[i].right = this.AttackCollisitionBox[i].left + 170;
+				this.AttackCollisitionBox[i].bottom = this.AttackCollisitionBox[i].top + 14;
+		}
 		else
-			this.AttackCollisitionBox[i].left = this.x + this.AttackCollisitionBox[i].x;
-		this.AttackCollisitionBox[i].top = this.y + this.AttackCollisitionBox[i].y;
-		this.AttackCollisitionBox[i].right = this.AttackCollisitionBox[i].left + this.AttackCollisitionBox[i].w;
-		this.AttackCollisitionBox[i].bottom = this.AttackCollisitionBox[i].top + this.AttackCollisitionBox[i].h;
+		{
+			if(this.position == 0)
+				this.AttackCollisitionBox[i].left = this.x + (256 - this.AttackCollisitionBox[i].x - this.AttackCollisitionBox[i].w);
+			else
+				this.AttackCollisitionBox[i].left = this.x + this.AttackCollisitionBox[i].x;
+				this.AttackCollisitionBox[i].top = this.y + this.AttackCollisitionBox[i].y;
+				this.AttackCollisitionBox[i].right = this.AttackCollisitionBox[i].left + this.AttackCollisitionBox[i].w;
+				this.AttackCollisitionBox[i].bottom = this.AttackCollisitionBox[i].top + this.AttackCollisitionBox[i].h;
+		}
 	}
 	
 	this.leftBound =  0 - this.DownCollisitionBox[0].x;

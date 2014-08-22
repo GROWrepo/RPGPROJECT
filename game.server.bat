@@ -1,1 +1,1 @@
-nodemon "D:\xampp\htdocs\RPG\game.server.js"
+nodemon "C:\Users\Administrator\Downloads\RPGPROJECT\game.server.js"

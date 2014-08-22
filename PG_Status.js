@@ -27,6 +27,11 @@ function PGStatus(level,maxhp){
 	//img
 	this.hpImg = resourcePreLoader.GetImage("img/hp.png");
 	
+	
+	this.inventory.setItem(0,"sword");
+	this.inventory.setItem(0,"spear");
+	this.inventory.setItem(0,"bow");
+	
 	Status = this;
 }
 PGStatus.prototype.SetStatus = function(){

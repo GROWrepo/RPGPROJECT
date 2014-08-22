@@ -11,7 +11,8 @@ PGItem.prototype.Init = function(){
 	//wephon
 	this.AddItem(0,0,"not",0,0,0,0,0);
 	this.AddItem(0,1,"sword",2,2,3,0,0,100);
-	this.AddItem(0,2,"longsword",0,0,8,0,0,150);
+	this.AddItem(0,2,"spear",0,0,8,0,0,150);
+	this.AddItem(0,3,"bow",0,4,1,0,0,100);
 	//armer
 	this.AddItem(1,0,"not",0,0,0,0,0);
 	this.AddItem(1,1,"dress",0,1,0,3,0,100);

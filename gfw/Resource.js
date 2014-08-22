@@ -163,6 +163,29 @@ Resource.prototype.AddImage = function(){
 	
 	resourcePreLoader.AddImage("img/sk26000.png");resourcePreLoader.AddImage("img/sk26001.png");
 	resourcePreLoader.AddImage("img/sk26002.png");resourcePreLoader.AddImage("img/sk26003.png");
+	
+	//effect
+	resourcePreLoader.AddImage("img/effect10000.png");//기본
+	
+	resourcePreLoader.AddImage("img/effect00000.png");
+	resourcePreLoader.AddImage("img/effect00001.png");resourcePreLoader.AddImage("img/effect00003.png");
+	resourcePreLoader.AddImage("img/effect00002.png");resourcePreLoader.AddImage("img/effect00004.png");
+	resourcePreLoader.AddImage("img/effect00005.png");resourcePreLoader.AddImage("img/effect00008.png");
+	resourcePreLoader.AddImage("img/effect00006.png");resourcePreLoader.AddImage("img/effect00009.png");
+	resourcePreLoader.AddImage("img/effect00007.png");resourcePreLoader.AddImage("img/effect00010.png");
+	
+	resourcePreLoader.AddImage("img/effect01000.png");resourcePreLoader.AddImage("img/effect01005.png");
+	resourcePreLoader.AddImage("img/effect01001.png");resourcePreLoader.AddImage("img/effect01006.png");
+	resourcePreLoader.AddImage("img/effect01002.png");resourcePreLoader.AddImage("img/effect01007.png");
+	resourcePreLoader.AddImage("img/effect01003.png");resourcePreLoader.AddImage("img/effect01008.png");
+	resourcePreLoader.AddImage("img/effect01004.png");resourcePreLoader.AddImage("img/effect01009.png");
+	resourcePreLoader.AddImage("img/effect01010.png");
+	
+	//bow
+	resourcePreLoader.AddImage("img/bow10000.png");resourcePreLoader.AddImage("img/bow00006.png");
+	resourcePreLoader.AddImage("img/bow00000.png");resourcePreLoader.AddImage("img/bow00001.png");
+	resourcePreLoader.AddImage("img/bow00002.png");resourcePreLoader.AddImage("img/bow00004.png");
+	resourcePreLoader.AddImage("img/bow00003.png");resourcePreLoader.AddImage("img/bow00005.png");
 };
 
 Resource.prototype.AddSound = function(){
